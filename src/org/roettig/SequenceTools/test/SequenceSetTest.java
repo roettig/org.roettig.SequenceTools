@@ -5,7 +5,11 @@ package org.roettig.SequenceTools.test;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
@@ -83,7 +87,7 @@ public class SequenceSetTest
 	SequenceSet seqs1 = null;
 	try
 	{
-	    seqs1 = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test.fa").getFile());
+	    seqs1 = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test.afa").getFile());
 	} 
 	catch (FileNotFoundException e)
 	{
@@ -95,7 +99,9 @@ public class SequenceSetTest
 	    e.printStackTrace();
 	    fail("parseError during readFromFileTest");
 	}
-	assertEquals(seqs1.size(),2);
+	assertEquals(seqs1.size(),1);
+	// we can also read Fasta file with gap symbols
+	assertEquals("LKWPETER-",seqs1.getById("1").seqString());
     }
 
     /**
@@ -183,11 +189,40 @@ public class SequenceSetTest
 
     /**
      * Test method for {@link org.roettig.SequenceTools.SequenceSet#store(java.lang.String)}.
+     * @throws Exception 
      */
     @Test
-    public void testStore()
+    public void testStore() throws Exception
     {
+	SequenceSet seqs1 = new SequenceSet();
+	// we can also read Fasta file with gap symbols
+	Sequence seq1 = SeqTools.makeProteinSequence("1","LKWPETER-");
+	Sequence seq2 = SeqTools.makeProteinSequence("2","PETERSLKW");
+	seqs1.add(seq1);
+	seqs1.add(seq2);
+	File tmp = File.createTempFile("tmp","asc");
+	
+	String filename = tmp.getAbsolutePath().toString(); 
+	seqs1.store(filename);
+	
+	BufferedReader reader = new BufferedReader(new FileReader(filename));
 
+	String line = null;
+	int i=0;
+        while ((line=reader.readLine()) != null) 
+        {
+            if(i==0)
+        	assertEquals(">1 ",line);
+            if(i==1)
+        	assertEquals("LKWPETER-",line);
+            if(i==2)
+        	assertEquals(">2 ",line);            
+            if(i==3)
+        	assertEquals("PETERSLKW",line);
+            i++;
+        }
+        reader.close();
+        tmp.delete();
     }
 
     /**

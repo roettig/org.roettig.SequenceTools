@@ -82,7 +82,6 @@ public class ASCMSA extends MSA
 	{
 	    idx+=String.format("_%d",i);
 	}
-	System.out.println("idx="+idx);
 	idx = idx.substring(0, idx.length());
 
 	Sequence prot = null;

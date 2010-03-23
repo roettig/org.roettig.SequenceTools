@@ -1,8 +1,11 @@
 package org.roettig.SequenceTools;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.StringReader;
+
 import org.apache.commons.io.IOUtils;
 import org.biojava.bio.BioException;
 import org.biojava.bio.SimpleAnnotation;
@@ -17,6 +20,7 @@ import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SimpleSymbolList;
 import org.biojava.bio.symbol.SymbolList;
+import org.roettig.SequenceTools.exception.FileParseErrorException;
 
 /**
  * SeqTools collects several static helper functions in the context
@@ -260,27 +264,19 @@ public class SeqTools
 
     public static boolean checkFastaFile(String filename)
     {
-	BufferedInputStream is = null;
+	SequenceSet seqs = null;
 	try
 	{
-	    is = new BufferedInputStream(new FileInputStream(filename));
+	   seqs = SequenceSet.readFromFile(filename);
 	} 
-	catch (FileNotFoundException e1)
+	catch (FileNotFoundException e)
 	{
-	    e1.printStackTrace();
-	}
-	Alphabet alpha = AlphabetManager.alphabetForName("PROTEIN");
-
-
-
-	SequenceDB db = null;
-	try
-	{
-	    db = SeqIOTools.readFasta(is, alpha);
+	    e.printStackTrace();
+	    return false;
 	} 
-	catch (BioException e)
+	catch (FileParseErrorException e)
 	{
-	    //e.printStackTrace();
+	    e.printStackTrace();
 	    return false;
 	}
 	return true;
@@ -288,19 +284,17 @@ public class SeqTools
 
     public static boolean checkFastaString(String s)
     {
-	BufferedInputStream is = null;
-	is = new BufferedInputStream(IOUtils.toInputStream(s));
-	Alphabet alpha = AlphabetManager.alphabetForName("PROTEIN");
-	SequenceDB db = null;
+	SequenceSet seqs = null;
 	try
 	{
-	    db = SeqIOTools.readFasta(is, alpha);
+	    seqs = SequenceSet.readFromReader(new BufferedReader(new StringReader(s)));
 	} 
-	catch (BioException e)
+	catch (FileParseErrorException e)
 	{
+	    e.printStackTrace();
 	    return false;
 	}
-	return true;
+	return true;	
     }
 
     public static Sequence makeProteinSequence(String id, String seq)
