@@ -119,9 +119,6 @@ public class PairwiseAlignment
 	    e.printStackTrace();
 	}
 
-	String s1 = "";
-	String s2 = "";
-
 	int len = ali.length();
 
 	StringBuffer sbuf1 = new StringBuffer("");
@@ -144,13 +141,7 @@ public class PairwiseAlignment
 
 	    sbuf1.append(symb1);
 	    sbuf2.append(symb2);
-	    //s1 += symb1;
-	    //s2 += symb2;
 	} 
-	s1 = sbuf1.toString();
-	s2 = sbuf2.toString();
-	System.out.println(s1);
-	System.out.println(s2);
-	return id_calc.calculate(s1, s2);
+	return id_calc.calculate(sbuf1.toString(), sbuf2.toString());
     }
 }
