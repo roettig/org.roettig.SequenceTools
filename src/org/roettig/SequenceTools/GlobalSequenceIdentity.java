@@ -45,11 +45,9 @@ public class GlobalSequenceIdentity implements SequenceIdentity
 	{
 	    char symb1 = s1.charAt(i);
 	    char symb2 = s2.charAt(i);
-	    if(symb1=='-' || symb2 =='-')
-		continue;
-	    if(symb1==symb2)
+	    if(symb1==symb2&&symb1!='-')
 		matches++;
-	    else
+	    else		
 		mismatches++;
 	}
 	return matches/(matches+mismatches);
