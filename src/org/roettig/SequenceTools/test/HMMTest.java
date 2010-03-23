@@ -3,9 +3,7 @@
  */
 package org.roettig.SequenceTools.test;
 
-import static org.junit.Assert.*;
-
-import org.biojava.bio.seq.Sequence;
+import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.roettig.SequenceTools.HMM;
@@ -17,7 +15,7 @@ import org.roettig.SequenceTools.SequenceSet;
  * @author roettig
  *
  */
-public class HMMTest
+public class HMMTest extends TestCase
 {
 
     private HMM hmm = null;

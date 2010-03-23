@@ -4,6 +4,7 @@
 package org.roettig.SequenceTools.test;
 
 import static org.junit.Assert.*;
+import junit.framework.TestCase;
 
 import org.biojava.bio.seq.Sequence;
 import org.junit.Before;
@@ -16,7 +17,7 @@ import org.roettig.SequenceTools.SequenceSet;
  * @author roettig
  *
  */
-public class MSATest
+public class MSATest extends TestCase
 {
 
     MSA msa = null;
