@@ -24,12 +24,12 @@ import java.util.List;
  */
 public class PairwiseAlignment
 {
-    private SubstitutionMatrix matrix = null;
-    private Alphabet            alpha = null;
-    private FiniteAlphabet   alphabet = null;
+    private SubstitutionMatrix  matrix   = null;
+    private Alphabet            alpha    = null;
+    private FiniteAlphabet      alphabet = null;
 
-    public String s1;
-    public String s2;
+    private short gap_open = 10;
+    private short gap_ext  = 1;
 
     public PairwiseAlignment()
     {
@@ -39,21 +39,17 @@ public class PairwiseAlignment
 	{
 	    InputStream ins = getClass().getResource("/resources/BLOSUM62").openStream();
 	    BufferedReader br = new BufferedReader(new InputStreamReader(ins));
-	    //matrix = SubstitutionMatrix.getSubstitutionMatrix(br);
 	    StringBuffer stringMatrix = new StringBuffer("");
-	    String	   newLine	= System.getProperty("line.separator");
+	    String	   newLine    = System.getProperty("line.separator");
 	    while (br.ready()) 
 	    {
 		String line = br.readLine();
 		stringMatrix.append(line);
-		//System.out.println(line);
 		stringMatrix.append(newLine);
 	    }
 	    br.close();
 	    String mat = stringMatrix.toString();
-	    //FiniteAlphabet alpha = (FiniteAlphabet) AlphabetManager.alphabetForName("PROTEIN-TERM");//guessAlphabet(new BufferedReader(new StringReader(mat)));
 	    matrix = new SubstitutionMatrix(alphabet, mat, "BLOSUM62");
-	    //matrix = new SubstitutionMatrix(alphabet, blosum );
 	} 
 	catch (NumberFormatException e)
 	{
@@ -68,7 +64,16 @@ public class PairwiseAlignment
 	    e.printStackTrace();
 	}
     }
-
+    
+    public void setGapExtensionCost(short _e)
+    {
+	gap_ext  = _e;
+    }
+    
+    public void setGapOpenCost(short _e)
+    {
+	gap_open = _e;
+    }
 
     /**
      * Align the two sequences.
@@ -99,9 +104,9 @@ public class PairwiseAlignment
 	SequenceAlignment aligner = new NeedlemanWunsch( 
 		(short) 0,   // match
 		(short) 3,   // replace
-		(short) 10,  // insert
-		(short) 10,  // delete
-		(short) 0.5, // gapExtend
+		(short) gap_open,  // insert
+		(short) gap_open,  // delete
+		(short) gap_ext, // gapExtend
 		matrix       // SubstitutionMatrix
 	);
 	Alignment ali = null;
@@ -114,11 +119,14 @@ public class PairwiseAlignment
 	    e.printStackTrace();
 	}
 
-	s1 = "";
-	s2 = "";
+	String s1 = "";
+	String s2 = "";
 
 	int len = ali.length();
 
+	StringBuffer sbuf1 = new StringBuffer("");
+	StringBuffer sbuf2 = new StringBuffer("");
+	
 	for(int i=1;i<=len;i++)
 	{
 	    String symb1 = ali.symbolAt(x.getName(),i).getName();
@@ -134,24 +142,15 @@ public class PairwiseAlignment
 	    else
 		symb2 = SeqTools.ThreeLetterToShort(symb2);
 
-	    s1 += symb1;
-	    s2 += symb2;
-	}    
+	    sbuf1.append(symb1);
+	    sbuf2.append(symb2);
+	    //s1 += symb1;
+	    //s2 += symb2;
+	} 
+	s1 = sbuf1.toString();
+	s2 = sbuf2.toString();
+	System.out.println(s1);
+	System.out.println(s2);
 	return id_calc.calculate(s1, s2);
-    }
-
-    public static void main(String[] args) throws IllegalSymbolException, ChangeVetoException
-    {
-	/*
-	SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test.fa").getFile());
-	PairwiseAlignment pwa = new PairwiseAlignment();
-	double pid = pwa.align( seqs.getByIndex(0), seqs.getByIndex(1), AlignedSequenceIdentity.getInstance() );
-	System.out.println("pid="+pid);
-	pid = pwa.align( seqs.getByIndex(0), seqs.getByIndex(0), AlignedSequenceIdentity.getInstance() );
-	System.out.println("pid="+pid);
-
-	String s="(A,1,Te1)";
-	System.out.println(s.matches("\\([A-Z|_],\\d+,[A-z|0-9][A-z|0-9][A-z|0-9]\\)"));
-	 */
     }
 }

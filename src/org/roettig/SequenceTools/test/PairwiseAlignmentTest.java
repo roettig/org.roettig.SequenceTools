@@ -46,9 +46,9 @@ public class PairwiseAlignmentTest extends TestCase
 	SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test.fa").getFile());
 	PairwiseAlignment pwa = new PairwiseAlignment();
 	double pid = pwa.align( seqs.getByIndex(0), seqs.getByIndex(1), AlignedSequenceIdentity.getInstance() );
-	assertEquals("pid of alignment",pid,0.3220338983050847,1e-8);
+	assertEquals("pid of alignment",0.23404255319148937,pid,1e-8);
 	pid = pwa.align( seqs.getByIndex(0), seqs.getByIndex(0), AlignedSequenceIdentity.getInstance() );
-	assertEquals("pid of self-alignment",pid,1.0,1e-5);
+	assertEquals("pid of self-alignment",1.0,pid,1e-5);
     }
 
 }
