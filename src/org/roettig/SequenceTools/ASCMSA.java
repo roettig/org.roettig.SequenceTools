@@ -3,6 +3,7 @@
  */
 package org.roettig.SequenceTools;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -11,6 +12,7 @@ import java.util.Vector;
 import org.biojava.bio.seq.ProteinTools;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.symbol.IllegalSymbolException;
+import org.roettig.SequenceTools.exception.FileParseErrorException;
 
 /**
  * ASCMSA is a subclass of MSA and additionally handles positions of determined
@@ -106,7 +108,7 @@ public class ASCMSA extends MSA
      * @param filename 
      */
     @Override
-    public void load(String filename)
+    public void load(String filename) throws FileNotFoundException, FileParseErrorException
     {
 	super.load(filename);
 	

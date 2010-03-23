@@ -14,6 +14,8 @@ import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.Location;
 import org.biojava.utils.ChangeVetoException;
+import org.roettig.SequenceTools.exception.FileParseErrorException;
+
 
 /**
  * The MSA class is used to build and operate on multiple sequence alignments. 
@@ -160,9 +162,23 @@ public class MSA implements Iterable<Sequence>
      * 
      * @param filename
      */
-    public void load(String filename)
+    public void load(String filename) throws FileNotFoundException, FileParseErrorException
     {
-        SequenceSet seqsIn = SequenceSet.readFromFile(filename);
+
+	SequenceSet seqsIn = null;
+	try
+	{
+	    seqsIn = SequenceSet.readFromFile(filename);
+	} 
+	catch (FileNotFoundException e)
+	{
+	    e.printStackTrace();
+	} 
+	catch (FileParseErrorException e)
+	{
+	    e.printStackTrace();
+	}
+
         seqs.clear();
         for(Sequence s: seqsIn)
         {

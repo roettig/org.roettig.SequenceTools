@@ -4,6 +4,7 @@ import org.biojava.bio.symbol.*;
 import org.biojava.bio.*;
 import org.biojava.bio.seq.db.*;
 import org.biojava.bio.seq.io.*;
+import org.roettig.SequenceTools.exception.FileParseErrorException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -60,19 +61,14 @@ public class SequenceSet implements Iterable<Sequence>
      * 
      * @param filename
      * @return SequenceSet
+     * @throws FileNotFoundException 
      */
-    public static SequenceSet readFromFile(String filename)
+    public static SequenceSet readFromFile(String filename) throws FileNotFoundException, FileParseErrorException
     {
         SequenceSet ret        = new SequenceSet();
         BufferedInputStream is = null;
-        try
-        {
-            is = new BufferedInputStream(new FileInputStream(filename));
-        } 
-        catch (FileNotFoundException e1)
-        {
-            e1.printStackTrace();
-        }
+        is = new BufferedInputStream(new FileInputStream(filename));
+
         Alphabet alpha = AlphabetManager.alphabetForName("PROTEIN");
     
 
@@ -85,6 +81,7 @@ public class SequenceSet implements Iterable<Sequence>
         catch (BioException e)
         {
             e.printStackTrace();
+            throw new FileParseErrorException();
         }
         
         SequenceIterator iter =  db.sequenceIterator();
@@ -103,6 +100,7 @@ public class SequenceSet implements Iterable<Sequence>
             catch (BioException e)
             {
                 e.printStackTrace();
+                throw new FileParseErrorException();
             }
             
             ret.add( seq );
@@ -220,7 +218,20 @@ public class SequenceSet implements Iterable<Sequence>
         }
         */
         
-        SequenceSet seqs = SequenceSet.readFromFile("/tmp/all.afa");
+        SequenceSet seqs = null;
+	try
+	{
+	    seqs = SequenceSet.readFromFile("/tmp/adb.log");
+	}
+	catch (FileNotFoundException e)
+	{
+	    e.printStackTrace();
+	}
+	catch (FileParseErrorException e)
+	{
+	    e.printStackTrace();
+	}
+	
         for(Sequence s: seqs)
         {
             System.out.println( s.getName() );

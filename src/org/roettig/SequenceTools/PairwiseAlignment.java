@@ -127,6 +127,7 @@ public class PairwiseAlignment
 
     public static void main(String[] args) throws IllegalSymbolException, ChangeVetoException
     {
+	/*
 	SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test.fa").getFile());
 	PairwiseAlignment pwa = new PairwiseAlignment();
 	double pid = pwa.align( seqs.getByIndex(0), seqs.getByIndex(1), AlignedSequenceIdentity.getInstance() );
@@ -136,6 +137,7 @@ public class PairwiseAlignment
 	
 	String s="(A,1,Te1)";
 	System.out.println(s.matches("\\([A-Z|_],\\d+,[A-z|0-9][A-z|0-9][A-z|0-9]\\)"));
+	*/
     }
 
 

@@ -17,6 +17,7 @@ import java.util.Properties;
 
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.io.SeqIOTools;
+import org.roettig.SequenceTools.exception.FileParseErrorException;
 
 /**
  * The HMM class is used to build and operate on Hidden Markov Models.
@@ -174,7 +175,7 @@ public class HMM
         }
     }
     
-    public MSA align(SequenceSet seqs)
+    public MSA align(SequenceSet seqs) throws Exception
     {
         MSA ret = new MSA();
         
@@ -225,7 +226,21 @@ public class HMM
             e1.printStackTrace();
         } 
         
-        ret.load(tmpOut.toString());
+        
+        try
+	{
+	    ret.load(tmpOut.toString());
+	} 
+        catch (FileNotFoundException e)
+	{	
+	    e.printStackTrace();
+	    throw(e);
+	} 
+        catch (FileParseErrorException e)
+	{
+	    e.printStackTrace();
+	    throw(e);
+	}
         
         hmmFile.delete();
         tmpIn.delete();
@@ -238,12 +253,14 @@ public class HMM
     
     public static void main(String[] args) throws Exception
     {
+	/*
 	MSA coremsa = new MSA();
 	coremsa.load("/tmp/ASCserver/jobs/48d23da92c0aab19f4edc34b908e89e3/core.afa");
 	HMM corehmm = new HMM(coremsa);
 	SequenceSet allseqs = SequenceSet.readFromFile("/tmp/ASCserver/jobs/48d23da92c0aab19f4edc34b908e89e3/s3.fa");
         // generate complete MSA using hmmalign
         MSA allmsa = corehmm.align(allseqs);
+        */
     }
 
 }
