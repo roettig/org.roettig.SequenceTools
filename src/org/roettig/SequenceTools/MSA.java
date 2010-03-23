@@ -2,18 +2,11 @@ package org.roettig.SequenceTools;
 
 import java.util.Iterator;
 import java.util.Properties;
-import java.util.Vector;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
-
 import org.biojava.bio.Annotation;
-import org.biojava.bio.BioException;
-import org.biojava.bio.seq.ProteinTools;
 import org.biojava.bio.seq.Sequence;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.Location;
-import org.biojava.utils.ChangeVetoException;
 import org.roettig.SequenceTools.exception.FileParseErrorException;
 
 

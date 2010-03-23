@@ -3,8 +3,6 @@ package org.roettig.SequenceTools;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-
 import org.apache.commons.io.IOUtils;
 import org.biojava.bio.BioException;
 import org.biojava.bio.SimpleAnnotation;

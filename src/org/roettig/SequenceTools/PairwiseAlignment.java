@@ -3,17 +3,10 @@ package org.roettig.SequenceTools;
 import org.biojava.bio.BioException;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.symbol.*;
-
 import org.biojava.bio.alignment.*;
-
 import org.biojava.utils.ChangeVetoException;
-
-
 import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
+
 
 /**
  * The PairwiseAlignment class is used for calculation of pairwise alignments
@@ -25,7 +18,6 @@ import java.util.List;
 public class PairwiseAlignment
 {
     private SubstitutionMatrix  matrix   = null;
-    private Alphabet            alpha    = null;
     private FiniteAlphabet      alphabet = null;
 
     private short gap_open = 10;
@@ -33,7 +25,6 @@ public class PairwiseAlignment
 
     public PairwiseAlignment()
     {
-	alpha    = AlphabetManager.alphabetForName("PROTEIN");
 	alphabet = (FiniteAlphabet) AlphabetManager.alphabetForName("PROTEIN");
 	try
 	{
