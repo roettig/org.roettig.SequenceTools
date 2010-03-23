@@ -102,6 +102,13 @@ public class ASCMSA extends MSA
     }
     
     
+    public static ASCMSA loadFromFile(String filename) throws FileNotFoundException, FileParseErrorException
+    {
+	ASCMSA ret = new ASCMSA();
+	ret.load(filename);
+	return ret;
+    }
+    
     /**
      * Load an ASCMSA from file. 
      * 
@@ -148,7 +155,7 @@ public class ASCMSA extends MSA
      * @param sid sequence ID of reference sequence
      * @return SequenceSet
      */
-    public SequenceSet getSignatures(String sid) throws Exception
+    public SequenceSet getSignatures(String sid)
     {
 	return this.getSubSequences(ascidx,sid); 
     }

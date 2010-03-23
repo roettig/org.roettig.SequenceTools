@@ -157,6 +157,13 @@ public class MSA implements Iterable<Sequence>
         seqs.store(filename);
     }
     
+    public static MSA loadFromFile(String filename) throws FileNotFoundException, FileParseErrorException
+    {
+	MSA ret = new MSA();
+	ret.load(filename);
+	return ret;
+    }
+    
     /**
      * Load MSA from file.
      * 
@@ -275,9 +282,8 @@ public class MSA implements Iterable<Sequence>
      * @param refsid
      * @return SequenceSet
      * 
-     * @throws Exception
      */
-    public SequenceSet getSubSequences( Set<Integer> cols, String refsid) throws Exception
+    public SequenceSet getSubSequences( Set<Integer> cols, String refsid)
     {
         TreeMap<Integer,Integer> nidxs = new TreeMap<Integer,Integer>();
         for(Integer c: cols)

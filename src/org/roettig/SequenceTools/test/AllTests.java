@@ -20,6 +20,7 @@ public class AllTests
 	suite.addTestSuite(HMMTest.class);
 	suite.addTestSuite(MSATest.class);
 	suite.addTestSuite(PairwiseAlignmentTest.class);
+	suite.addTestSuite(ASCMSATest.class);
 	//$JUnit-END$
 	return suite;
     }
