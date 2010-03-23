@@ -15,16 +15,22 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.Location;
 import org.biojava.utils.ChangeVetoException;
 
-
-
-
-
+/**
+ * The MSA class is used to build and operate on multiple sequence alignments. 
+ * 
+ * @author roettig
+ */
 public class MSA implements Iterable<Sequence>
 {
     protected SequenceSet seqs = null;
     protected HashMap<Integer,Integer> quality = null;
     private static String MUSCLEPATH = null;
-    
+
+    public MSA()
+    {
+        seqs    = new SequenceSet();
+        quality = new HashMap<Integer,Integer>();
+    }
     
     private static void checkMusclePath() throws Exception
     {
@@ -69,6 +75,13 @@ public class MSA implements Iterable<Sequence>
 
     }
     
+    /**
+     * Static creation method to create new MSA using Muscle.
+     * 
+     * @param seqs
+     * @return MSA
+     * @throws Exception
+     */
     public static MSA createMuscleMSA(SequenceSet seqs) throws Exception
     {
         MSA ret     = new MSA();
@@ -132,12 +145,21 @@ public class MSA implements Iterable<Sequence>
         return ret;
     }
     
-    
+    /**
+     * Store MSA to file.
+     * 
+     * @param filename
+     */
     public void store(String filename)
     {
         seqs.store(filename);
     }
     
+    /**
+     * Load MSA from file.
+     * 
+     * @param filename
+     */
     public void load(String filename)
     {
         SequenceSet seqsIn = SequenceSet.readFromFile(filename);
@@ -148,27 +170,39 @@ public class MSA implements Iterable<Sequence>
         }
     }
     
+    /**
+     * Get sequence in MSA by ID.
+     * @param id
+     * @return Sequence
+     */
     public Sequence getById(String id)
     {
     	return seqs.getById(id);
     }
     
+    /**
+     * Get i-th sequence in MSA.
+     * @param idx
+     * @return Sequence
+     */
     public Sequence getByIndex(int idx)
     {
     	return seqs.getByIndex(idx);
     }
-    
-    public MSA()
-    {
-        seqs    = new SequenceSet();
-        quality = new HashMap<Integer,Integer>();
-    }
-    
+   
+    /**
+     * Get number of sequences in the MSA (its depth).
+     * @return depth
+     */
     public int depth()
     {
         return seqs.size();
     }
     
+    /**
+     * Get number of columns in the MSA (its width).
+     * @return width
+     */
     public int width()
     {
         if(depth()>0)
@@ -177,6 +211,12 @@ public class MSA implements Iterable<Sequence>
            return 0;
     }
     
+    /**
+     * Get all columns from the MSA that have at most <i>fraction</i>*depth gaps. 
+     * 
+     * @param frac  fraction of gaps allowed in a column to be kept 
+     * @return SequenceSet
+     */
     public SequenceSet getAlignedSubSequences(double frac)
     {
     	SequenceSet ret   = new SequenceSet();
@@ -212,7 +252,16 @@ public class MSA implements Iterable<Sequence>
     	return ret;
     }
     
-    public SequenceSet getSubSequences( Set<Integer> cols, String refsid) throws ChangeVetoException, BioException
+    /**
+     * Get all columns with indices given by <i>cols</i>. Indices are interpreted
+     * relative to the sequence with ID given by <i>refsid</i>.
+     * @param cols
+     * @param refsid
+     * @return SequenceSet
+     * 
+     * @throws Exception
+     */
+    public SequenceSet getSubSequences( Set<Integer> cols, String refsid) throws Exception
     {
         TreeMap<Integer,Integer> nidxs = new TreeMap<Integer,Integer>();
         for(Integer c: cols)
@@ -226,13 +275,18 @@ public class MSA implements Iterable<Sequence>
             Sequence subseq = getSubSequence(s.getName(), nidxs.keySet());
             Annotation seqAn = subseq.getAnnotation();
             seqAn.setProperty("parent", s);
-
             ret.add( subseq );
         }
         return ret;
     }
     
-    
+    /**
+     * Get all columns with indices given by <i>cols</i>. Indices are interpreted
+     * relative to the sequence with ID given by <i>refsid</i>. 
+     * @param sid
+     * @param cols
+     * @return Sequence
+     */
     public Sequence getSubSequence(String sid, Set<Integer> cols)
     {
         String subseq = "";
@@ -240,30 +294,56 @@ public class MSA implements Iterable<Sequence>
         {
             subseq += getSymbol(sid,  c-1 );
         }
+        Sequence retseq = SeqTools.makeProteinSequence(sid, subseq);
+        /*
         Sequence retseq = null;
         try
         {
-            retseq = ProteinTools.createProteinSequence(subseq, sid);
+            retseq = SeqTools.makeProteinSequence(sid, subseq);
+            //retseq = ProteinTools.createProteinSequence(subseq, sid);
         } 
         catch (IllegalSymbolException e)
         {
             e.printStackTrace();
         } 
+        */
         return retseq;
     }
     
+    /**
+     * Get symbol in row <i>i</i> and column <i>j</i> in MSA.
+     * 
+     * @param i
+     * @param j
+     * @return String
+     */
     public final String getSymbol(int i, int j)
     {
         Sequence s = seqs.getByIndex(i);
         return s.seqString().substring(j, j+1);
     }
-    
+
+    /**
+     * Get symbol in sequence with ID <i>sid</i> and column <i>j</i> in MSA.
+     * 
+     * @param sid
+     * @param j
+     * @return String
+     */
     public String getSymbol(String sid, int j)
     {
         Sequence s = seqs.getById(sid);
         return s.seqString().substring(j, j+1);
     }
     
+    /**
+     * Map column index <i>idx</i> of MSA to sequence-internal index
+     * of sequence given by ID <i>sid</i>. 
+     * 
+     * @param sid
+     * @param idx
+     * @return int
+     */
     public int mapColumnIndexToSequenceIndex(String sid, int idx)
     {
         Sequence s = seqs.getById(sid);
@@ -277,6 +357,13 @@ public class MSA implements Iterable<Sequence>
         return sM;
     }
     
+    /**
+     * Map sequence-internal index <i>idx</i> of sequence given by ID <i>sid</i> to
+     * column index of MSA.  
+     * @param sid
+     * @param idx
+     * @return int
+     */
     public int mapSequenceIndexToColumnIndex(String sid, int idx)
     {
         Sequence s = seqs.getById(sid);
@@ -293,6 +380,11 @@ public class MSA implements Iterable<Sequence>
         return -1;
     }
     
+    /**
+     * Add sequence to MSA.
+     * 
+     * @param seq
+     */
     protected void add(Sequence seq)
     {
         seqs.add( seq );    
@@ -304,6 +396,10 @@ public class MSA implements Iterable<Sequence>
         return seqs.iterator();
     }
     
+    /**
+     * Calculate the overall quality of the MSA.
+     * 
+     */
     public void calculateQuality()
     {
        
@@ -363,11 +459,23 @@ public class MSA implements Iterable<Sequence>
 
     }
         
+    /**
+     * Set the overall quality of column <i>c</i> within the MSA.
+     * 
+     * @param c
+     * @param q
+     */
     public void setColumnQuality(int c, int q)
     {
         quality.put(c,q);
     }
     
+    /**
+     * Get the overall quality of column <i>c</i> within the MSA.
+     * 
+     * @param c
+     * @return int
+     */
     public int getColumnQuality(int c)
     {
         return quality.get(c);

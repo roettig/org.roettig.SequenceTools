@@ -15,7 +15,13 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
-
+/**
+ * The PairwiseAlignment class is used for calculation of pairwise alignments
+ * between sequence pairs.
+ * 
+ * @author roettig
+ *
+ */
 public class PairwiseAlignment
 {
     private SubstitutionMatrix matrix = null;
@@ -64,8 +70,16 @@ public class PairwiseAlignment
     }
     
     
-    
-    public double align(Sequence x, Sequence y) throws IllegalSymbolException, ChangeVetoException
+    /**
+     * Align the two sequences.
+     * 
+     * @param x
+     * @param y
+     * @return
+     * @throws IllegalSymbolException
+     * @throws ChangeVetoException
+     */
+    public double align(Sequence x, Sequence y, SequenceIdentity id_calc) throws IllegalSymbolException, ChangeVetoException
     {
         SequenceAlignment aligner = new NeedlemanWunsch( 
                 (short) 0,   // match
@@ -75,24 +89,6 @@ public class PairwiseAlignment
                 (short) 0.5, // gapExtend
                 matrix       // SubstitutionMatrix
               );
-       
-        /*
-        System.out.println(x.seqString());
-        System.out.println(y.seqString());
-        System.out.println(x.getAlphabet().equals(y.getAlphabet()));
-        System.out.println(x.getAlphabet().equals(matrix.getAlphabet()));
-        System.out.println(matrix.getAlphabet().getName());
-        System.out.println(x.getAlphabet().getName());
-        Iterator iter = matrix.getAlphabet().iterator();
-        
-        while(iter.hasNext())
-        {
-            Symbol s = (Symbol) iter.next();
-            System.out.println(s.getName()+" "+s.getMatches());
-        }
-        System.out.println("####");
-        */
-        
         Alignment ali = null;
         try
         {
@@ -112,8 +108,6 @@ public class PairwiseAlignment
         {
             String symb1 = ali.symbolAt(x.getName(),i).getName();
             String symb2 = ali.symbolAt(y.getName(),i).getName();
-            //String symb1 = ali.symbolAt(1).getName();
-            //String symb2 = ali.symbolAt(2).getName();
 
             if(symb1.equals("[]")||symb1.equals("gap"))
                 symb1 = "-";
@@ -128,21 +122,16 @@ public class PairwiseAlignment
             s1 += symb1;
             s2 += symb2;
         }    
-        //a = s1;
-        //b = s2;
-        //System.out.println(s1);
-        //System.out.println(s2);
-        return SeqTools.getAlignedSequenceIdentity(s1, s2);        
-        //return SeqTools.getGlobalSequenceIdentity(s1, s2);
+        return id_calc.calculate(s1, s2);
     }
 
     public static void main(String[] args) throws IllegalSymbolException, ChangeVetoException
     {
 	SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test.fa").getFile());
 	PairwiseAlignment pwa = new PairwiseAlignment();
-	double pid = pwa.align( seqs.getByIndex(0), seqs.getByIndex(1) );
+	double pid = pwa.align( seqs.getByIndex(0), seqs.getByIndex(1), AlignedSequenceIdentity.getInstance() );
 	System.out.println("pid="+pid);
-	pid = pwa.align( seqs.getByIndex(0), seqs.getByIndex(0) );
+	pid = pwa.align( seqs.getByIndex(0), seqs.getByIndex(0), AlignedSequenceIdentity.getInstance() );
 	System.out.println("pid="+pid);
 	
 	String s="(A,1,Te1)";

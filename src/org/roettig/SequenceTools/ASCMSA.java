@@ -13,6 +13,9 @@ import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.symbol.IllegalSymbolException;
 
 /**
+ * ASCMSA is a subclass of MSA and additionally handles positions of determined
+ * active site residues.
+ * 
  * @author roettig
  *
  */
@@ -35,6 +38,40 @@ public class ASCMSA extends MSA
 	}
     }
     
+   
+    /**
+     * Set the indices of active site residues. 
+     * 
+     * @param idx indices of active site residues
+     */
+    public void setASCIdx(Set<Integer> idx)
+    {
+	ascidx.clear();
+	for(Integer i: idx)
+	{
+	    ascidx.add(i);
+	}
+    }
+    
+    /**
+     * Set the indices of active site residues. 
+     * 
+     * @param idx indices of active site residues
+     */
+    public void setASCIdx(List<Integer> idx)
+    {
+	ascidx.clear();
+	for(Integer i: idx)
+	{
+	    ascidx.add(i);
+	}
+    }
+
+    /**
+     * Load an ASCMSA from file. 
+     * 
+     * @param filename 
+     */
     @Override
     public void store(String filename)
     {
@@ -62,24 +99,12 @@ public class ASCMSA extends MSA
 	super.store(filename);
     }
     
-    public void setASCIdx(Set<Integer> idx)
-    {
-	ascidx.clear();
-	for(Integer i: idx)
-	{
-	    ascidx.add(i);
-	}
-    }
     
-    public void setASCIdx(List<Integer> idx)
-    {
-	ascidx.clear();
-	for(Integer i: idx)
-	{
-	    ascidx.add(i);
-	}
-    }
-    
+    /**
+     * Load an ASCMSA from file. 
+     * 
+     * @param filename 
+     */
     @Override
     public void load(String filename)
     {
@@ -115,6 +140,22 @@ public class ASCMSA extends MSA
 	
     }
     
+    /**
+     * Get the signature sequences from the MSA. 
+     * 
+     * @param sid sequence ID of reference sequence
+     * @return SequenceSet
+     */
+    public SequenceSet getSignatures(String sid) throws Exception
+    {
+	return this.getSubSequences(ascidx,sid); 
+    }
+
+    /**
+     * Get the signature sequences from the MSA. 
+     * 
+     * @return SequenceSet
+     */
     public SequenceSet getSignatures() throws Exception
     {
 	return this.getSubSequences(ascidx,"pdb"); 

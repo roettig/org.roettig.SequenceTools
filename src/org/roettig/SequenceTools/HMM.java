@@ -18,7 +18,12 @@ import java.util.Properties;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.io.SeqIOTools;
 
-
+/**
+ * The HMM class is used to build and operate on Hidden Markov Models.
+ * 
+ * @author roettig
+ *
+ */
 
 public class HMM
 {
@@ -124,6 +129,12 @@ public class HMM
         
     }
     
+    /**
+     * Load HMM from file.
+     * 
+     * @param filename
+     * @throws IOException
+     */
     private void loadFromFile(String filename) throws IOException
     {
         try 
@@ -144,6 +155,11 @@ public class HMM
         }
     }  
     
+    /**
+     * Save HMM to file.
+     * 
+     * @param filename
+     */
     private void saveToFile(String filename)
     {
         try

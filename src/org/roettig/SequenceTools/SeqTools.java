@@ -20,6 +20,13 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SimpleSymbolList;
 import org.biojava.bio.symbol.SymbolList;
 
+/**
+ * SeqTools collects several static helper functions in the context
+ * of sequence analysis.
+ * 
+ * @author roettig
+ *
+ */
 public class SeqTools
 {
     static int[][] BLOSUM62 =
@@ -96,7 +103,12 @@ public class SeqTools
     	  { 0.0000,0.0000,0.0000,0.0000,0.0000,0.0000,0.0000,0.0000,0.0000,2.0000,1.0000,0.0000,1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,5.0000 },
         };
 
-    //
+    /**
+     * Calculate BLOSUM6 score of two amino acid symbols.
+     * @param x
+     * @param y
+     * @return
+     */
     public static int getBLOSUM62Score(char x, char y)
     {
         int idx1 = OneLetterToInt(x);
@@ -145,6 +157,7 @@ public class SeqTools
             return 0.0;
         return CHEMSIMkn[idx1][idx2];
     }
+    
     public static String ThreeLetterToShort(String code)
     {
         code = code.toUpperCase();
@@ -246,66 +259,7 @@ public class SeqTools
             ret = 19;        
         return ret;
     }
-    
-    public static double getAlignedSequenceIdentity(Sequence x, Sequence y)
-    {
-        String s1 = x.seqString();
-        String s2 = y.seqString();
-        return getAlignedSequenceIdentity(s1,s2);    
-    }
-    
-    public static double getAlignedSequenceIdentity(String s1, String s2)
-    {
-        double matches    = 0.0;
-        double mismatches = 0.0;
         
-
-        for(int i=0;i<s1.length();i++)
-        {
-            String symb1 = s1.substring(i,i+1);
-            String symb2 = s2.substring(i,i+1);
-            
-            if(symb1.equals("-") || symb2.equals("-"))
-                continue;
-            if(symb1.equals(symb2))
-                matches++;
-            else
-                mismatches++;
-        }
-        return matches/(matches+mismatches);
-    }
-
-    public static double getGlobalSequenceIdentity(Sequence x, Sequence y)
-    {
-        String s1 = x.seqString();
-        String s2 = y.seqString();
-        return getAlignedSequenceIdentity(s1,s2);    
-    }
-    
-    public static double getGlobalSequenceIdentity(String s1, String s2)
-    {
-        double matches    = 0.0;
-        double mismatches = 0.0;
-        double gaps       = 0;
-
-        for(int i=0;i<s1.length();i++)
-        {
-            String symb1 = s1.substring(i,i+1);
-            String symb2 = s2.substring(i,i+1);
-            
-            if(symb1.equals("-") || symb2.equals("-"))
-            {
-                gaps++;
-                continue;
-            }
-            if(symb1.equals(symb2))
-                matches++;
-            else
-                mismatches++;
-        }
-        return matches/(matches+mismatches+gaps);
-    }
-    
     public static boolean checkFastaFile(String filename)
     {
 	 BufferedInputStream is = null;
@@ -357,7 +311,7 @@ public class SeqTools
         SymbolTokenization p = null;
 	try
 	{
-		p = fa.getTokenization("token");
+	    p = fa.getTokenization("token");
 	} 
 	catch (BioException e)
 	{
@@ -370,7 +324,6 @@ public class SeqTools
 	} 
 	catch (IllegalSymbolException e)
 	{
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
         // make Sequence from SymbolList
