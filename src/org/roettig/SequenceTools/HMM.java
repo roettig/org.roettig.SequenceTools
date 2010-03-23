@@ -72,7 +72,7 @@ public class HMM
            createHMM(msa);
     }
     
-    public HMM(MSA msa, String _hmmerpath)
+    public HMM(MSA msa, String _hmmerpath) throws Exception
     {
            HMMERPATH = _hmmerpath;
            createHMM(msa);
@@ -92,7 +92,7 @@ public class HMM
            createHMM(msa);           
     }
     
-    private void createHMM(MSA msa)
+    private void createHMM(MSA msa) throws Exception
     {
         File tmpIn  = null;
         File tmpOut = null;
@@ -120,10 +120,12 @@ public class HMM
         catch(InterruptedException e)
         {
             e.printStackTrace();
+            throw(e);
         } 
-        catch (IOException e1)
+        catch (IOException e)
         {
-            e1.printStackTrace();
+            e.printStackTrace();
+            throw(e);
         }
         tmpOut.delete();
         tmpIn.delete();
@@ -148,7 +150,7 @@ public class HMM
                hmmstring += str+"\n";
             }
             in.close();
-            System.out.println("hmmstring="+hmmstring.substring(0,30));
+            //System.out.println("hmmstring="+hmmstring.substring(0,30));
         } 
         catch (IOException e) 
         {
@@ -184,9 +186,9 @@ public class HMM
         File hmmFile = null;
         try
         {
-           tmpIn   = File.createTempFile("createmsa", ".IN");
-           tmpOut  = File.createTempFile("createmsa", ".OUT");
-           hmmFile = File.createTempFile("createmsa", ".IN");
+           tmpIn   = File.createTempFile("createhmmali", ".IN");
+           tmpOut  = File.createTempFile("createhmmali", ".OUT");
+           hmmFile = File.createTempFile("createhmmali", ".IN");
         }
         catch(IOException e)
         {
@@ -198,17 +200,20 @@ public class HMM
         try
 	{
 	    Thread.sleep(30);
-	} catch (InterruptedException e2)
+	} 
+        catch (InterruptedException e)
 	{
-	    // TODO Auto-generated catch block
-	    e2.printStackTrace();
+	    e.printStackTrace();
 	}
-        System.out.println(HMMERPATH+"/hmmalign --outformat A2M -o "+tmpOut.toString()+" "+hmmFile.toString()+" "+tmpIn.toString());
+        
+        //System.out.println(HMMERPATH+"/hmmalign --outformat A2M -o "+tmpOut.toString()+" "+hmmFile.toString()+" "+tmpIn.toString());
+        
         try
         {
           ProcessBuilder builder = new ProcessBuilder( "/bin/bash", "-c", HMMERPATH+"/hmmalign --outformat A2M -o "+tmpOut.toString()+" "+hmmFile.toString()+" "+tmpIn.toString()); 
           Process p = builder.start();   
           p.waitFor();
+          /*
           BufferedReader reader = new BufferedReader( new InputStreamReader(p.getErrorStream()) );
           String s;
           while( null != (s = reader.readLine()) ) 
@@ -216,6 +221,7 @@ public class HMM
               System.out.println(s);
           }
           reader.close();
+          */
         }
         catch(InterruptedException e)
         {
@@ -242,6 +248,7 @@ public class HMM
 	    throw(e);
 	}
         
+        // delete temporary files
         hmmFile.delete();
         tmpIn.delete();
         tmpOut.delete();
