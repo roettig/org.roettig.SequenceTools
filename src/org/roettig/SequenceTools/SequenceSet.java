@@ -23,15 +23,16 @@ import java.util.*;
 
 public class SequenceSet implements Iterable<Sequence>
 {
-    private Vector<Sequence> seqs = null;
+    private List<Sequence> seqs = null;
     
     public SequenceSet()
     {
         seqs = new Vector<Sequence>();
     }
     
-    public SequenceSet(Vector<Sequence> seqs)
+    public SequenceSet(List<Sequence> seqs)
     {
+	this();
         for(Sequence s:seqs)
         {
             add( s );
@@ -163,7 +164,7 @@ public class SequenceSet implements Iterable<Sequence>
      */
     public void add(Sequence s)
     {
-        seqs.addElement( s );
+        seqs.add( s );
     }
     
     /**
