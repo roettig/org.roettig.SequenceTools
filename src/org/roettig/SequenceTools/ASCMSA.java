@@ -25,12 +25,12 @@ public class ASCMSA extends MSA
 {
 
     protected Set<Integer> ascidx = new TreeSet<Integer>();
-    
+
     public ASCMSA()
     {
 	super();
     }
-    
+
     public ASCMSA(MSA msa)
     {
 	super();
@@ -39,8 +39,8 @@ public class ASCMSA extends MSA
 	    this.add(s);
 	}
     }
-    
-   
+
+
     /**
      * Set the indices of active site residues. 
      * 
@@ -54,7 +54,7 @@ public class ASCMSA extends MSA
 	    ascidx.add(i);
 	}
     }
-    
+
     /**
      * Set the indices of active site residues. 
      * 
@@ -78,7 +78,7 @@ public class ASCMSA extends MSA
     public void store(String filename)
     {
 	Sequence s = seqs.getById("pdb");
-	
+
 	String idx = "";
 	for(Integer i: ascidx)
 	{
@@ -86,11 +86,11 @@ public class ASCMSA extends MSA
 	}
 	System.out.println("idx="+idx);
 	idx = idx.substring(0, idx.length());
-	
+
 	Sequence prot = null;
 	try
 	{
-	   prot  = ProteinTools.createProteinSequence( s.seqString(),"pdb"+idx);
+	    prot  = ProteinTools.createProteinSequence( s.seqString(),"pdb"+idx);
 	} 
 	catch (IllegalSymbolException e)
 	{
@@ -100,15 +100,15 @@ public class ASCMSA extends MSA
 	seqs.add(prot);
 	super.store(filename);
     }
-    
-    
+
+
     public static ASCMSA loadFromFile(String filename) throws FileNotFoundException, FileParseErrorException
     {
 	ASCMSA ret = new ASCMSA();
 	ret.load(filename);
 	return ret;
     }
-    
+
     /**
      * Load an ASCMSA from file. 
      * 
@@ -118,24 +118,24 @@ public class ASCMSA extends MSA
     public void load(String filename) throws FileNotFoundException, FileParseErrorException
     {
 	super.load(filename);
-	
+
 	for(Sequence s: seqs)
 	{
 	    if(s.getName().startsWith("pdb"))
 	    {
 		String sid = s.getName();
-		
+
 		String toks[] = sid.split("_");
 		for(int i=1;i<toks.length;i++)
 		{
 		    //System.out.println(Integer.parseInt(toks[i]));
 		    ascidx.add( Integer.parseInt(toks[i]) );
 		}
-		
+
 		Sequence prot = null;
 		try
 		{
-		   prot  = ProteinTools.createProteinSequence( s.seqString(),"pdb");
+		    prot  = ProteinTools.createProteinSequence( s.seqString(),"pdb");
 		} 
 		catch (IllegalSymbolException e)
 		{
@@ -146,9 +146,9 @@ public class ASCMSA extends MSA
 		break;
 	    }
 	}
-	
+
     }
-    
+
     /**
      * Get the signature sequences from the MSA. 
      * 
@@ -169,28 +169,28 @@ public class ASCMSA extends MSA
     {
 	return this.getSubSequences(ascidx,"pdb"); 
     }
-    
+
     public static void main(String[] args) throws Exception
     {	
 	ASCMSA ascmsa = new ASCMSA();
 	ascmsa.load("/tmp/all.asc");
-	
+
 	SequenceSet ss = ascmsa.getSignatures();
 	ss.store("/tmp/raus");
-	
+
 	/*
 	List<Integer> idx = new Vector<Integer>();
 	idx.add(4);
 	ascmsa.setASCIdx(idx);
 	ascmsa.store("/tmp/raus2");
-	
+
 	ascmsa.load("/tmp/raus2");
 
 	System.out.println(ascmsa.getById("pdb").seqString());
-	
+
 	SequenceSet sss = ascmsa.getSignatures();
 	sss.store("/tmp/raus3");
-	*/
+	 */
     }
 
 }

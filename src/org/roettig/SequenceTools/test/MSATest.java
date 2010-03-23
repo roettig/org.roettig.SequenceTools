@@ -21,11 +21,11 @@ public class MSATest extends TestCase
 {
 
     MSA msa = null;
-    
+
     @Before
     public void setUp() 
     {
-        try
+	try
 	{
 	    SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test.fa").getFile());
 	    msa = MSA.createMuscleMSA(seqs);

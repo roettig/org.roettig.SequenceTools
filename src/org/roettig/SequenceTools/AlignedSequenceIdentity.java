@@ -14,11 +14,11 @@ package org.roettig.SequenceTools;
 public class AlignedSequenceIdentity implements SequenceIdentity
 {
     private static SequenceIdentity instance = null;
-    
+
     private AlignedSequenceIdentity()
     {
     }
-    
+
     public static SequenceIdentity getInstance() 
     {
 	if (instance == null) 
@@ -26,9 +26,9 @@ public class AlignedSequenceIdentity implements SequenceIdentity
 	    instance = new AlignedSequenceIdentity();
 	}
 	return instance;
-     }
+    }
 
-    
+
     /**
      * Calculate the aligned sequence identity between the two given sequence strings.
      * 
@@ -55,5 +55,4 @@ public class AlignedSequenceIdentity implements SequenceIdentity
 	}
 	return matches/(matches+mismatches);
     }
-
 }

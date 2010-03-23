@@ -44,7 +44,7 @@ public class SequenceIdentityTest extends TestCase
 	}
 	assertEquals(sid,0.8571428571428571,1e-8);
     }
-    
+
     @Test
     public void testGlobalSequenceIdentity()
     {

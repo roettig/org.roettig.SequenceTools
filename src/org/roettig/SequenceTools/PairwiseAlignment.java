@@ -27,21 +27,21 @@ public class PairwiseAlignment
     private SubstitutionMatrix matrix = null;
     private Alphabet            alpha = null;
     private FiniteAlphabet   alphabet = null;
-    
+
     public String s1;
     public String s2;
-    
+
     public PairwiseAlignment()
     {
 	alpha    = AlphabetManager.alphabetForName("PROTEIN");
-        alphabet = (FiniteAlphabet) AlphabetManager.alphabetForName("PROTEIN");
-        try
-        {
-            InputStream ins = getClass().getResource("/resources/BLOSUM62").openStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(ins));
-            //matrix = SubstitutionMatrix.getSubstitutionMatrix(br);
-            StringBuffer stringMatrix = new StringBuffer("");
-            String	   newLine	= System.getProperty("line.separator");
+	alphabet = (FiniteAlphabet) AlphabetManager.alphabetForName("PROTEIN");
+	try
+	{
+	    InputStream ins = getClass().getResource("/resources/BLOSUM62").openStream();
+	    BufferedReader br = new BufferedReader(new InputStreamReader(ins));
+	    //matrix = SubstitutionMatrix.getSubstitutionMatrix(br);
+	    StringBuffer stringMatrix = new StringBuffer("");
+	    String	   newLine	= System.getProperty("line.separator");
 	    while (br.ready()) 
 	    {
 		String line = br.readLine();
@@ -53,23 +53,23 @@ public class PairwiseAlignment
 	    String mat = stringMatrix.toString();
 	    //FiniteAlphabet alpha = (FiniteAlphabet) AlphabetManager.alphabetForName("PROTEIN-TERM");//guessAlphabet(new BufferedReader(new StringReader(mat)));
 	    matrix = new SubstitutionMatrix(alphabet, mat, "BLOSUM62");
-            //matrix = new SubstitutionMatrix(alphabet, blosum );
-        } 
-        catch (NumberFormatException e)
-        {
-            e.printStackTrace();
-        } 
-        catch (BioException e)
-        {
-            e.printStackTrace();
-        } 
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+	    //matrix = new SubstitutionMatrix(alphabet, blosum );
+	} 
+	catch (NumberFormatException e)
+	{
+	    e.printStackTrace();
+	} 
+	catch (BioException e)
+	{
+	    e.printStackTrace();
+	} 
+	catch (IOException e)
+	{
+	    e.printStackTrace();
+	}
     }
-    
-    
+
+
     /**
      * Align the two sequences.
      * 
@@ -79,50 +79,65 @@ public class PairwiseAlignment
      * @throws IllegalSymbolException
      * @throws ChangeVetoException
      */
+    public double align(Sequence x, Sequence y) throws IllegalSymbolException, ChangeVetoException
+    {
+	return align(x,y,AlignedSequenceIdentity.getInstance());
+    }
+    
+    /**
+     * Align the two sequences.
+     * 
+     * @param x
+     * @param y
+     * @param id_calc SequenceIdentity calculation method
+     * @return
+     * @throws IllegalSymbolException
+     * @throws ChangeVetoException
+     */
     public double align(Sequence x, Sequence y, SequenceIdentity id_calc) throws IllegalSymbolException, ChangeVetoException
     {
-        SequenceAlignment aligner = new NeedlemanWunsch( 
-                (short) 0,   // match
-                (short) 3,   // replace
-                (short) 10,  // insert
-                (short) 10,  // delete
-                (short) 0.5, // gapExtend
-                matrix       // SubstitutionMatrix
-              );
-        Alignment ali = null;
-        try
-        {
-            ali = aligner.getAlignment(x, y);
-        } 
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+	SequenceAlignment aligner = new NeedlemanWunsch( 
+		(short) 0,   // match
+		(short) 3,   // replace
+		(short) 10,  // insert
+		(short) 10,  // delete
+		(short) 0.5, // gapExtend
+		matrix       // SubstitutionMatrix
+	);
+	Alignment ali = null;
+	try
+	{
+	    ali = aligner.getAlignment(x, y);
+	} 
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	}
 
-        s1 = "";
-        s2 = "";
-        
-        int len = ali.length();
+	s1 = "";
+	s2 = "";
 
-        for(int i=1;i<=len;i++)
-        {
-            String symb1 = ali.symbolAt(x.getName(),i).getName();
-            String symb2 = ali.symbolAt(y.getName(),i).getName();
+	int len = ali.length();
 
-            if(symb1.equals("[]")||symb1.equals("gap"))
-                symb1 = "-";
-            else
-                symb1 = SeqTools.ThreeLetterToShort(symb1);
-            
-            if(symb2.equals("[]")||symb2.equals("gap"))
-                symb2 = "-";
-            else
-                symb2 = SeqTools.ThreeLetterToShort(symb2);
-            
-            s1 += symb1;
-            s2 += symb2;
-        }    
-        return id_calc.calculate(s1, s2);
+	for(int i=1;i<=len;i++)
+	{
+	    String symb1 = ali.symbolAt(x.getName(),i).getName();
+	    String symb2 = ali.symbolAt(y.getName(),i).getName();
+
+	    if(symb1.equals("[]")||symb1.equals("gap"))
+		symb1 = "-";
+	    else
+		symb1 = SeqTools.ThreeLetterToShort(symb1);
+
+	    if(symb2.equals("[]")||symb2.equals("gap"))
+		symb2 = "-";
+	    else
+		symb2 = SeqTools.ThreeLetterToShort(symb2);
+
+	    s1 += symb1;
+	    s2 += symb2;
+	}    
+	return id_calc.calculate(s1, s2);
     }
 
     public static void main(String[] args) throws IllegalSymbolException, ChangeVetoException
@@ -134,11 +149,9 @@ public class PairwiseAlignment
 	System.out.println("pid="+pid);
 	pid = pwa.align( seqs.getByIndex(0), seqs.getByIndex(0), AlignedSequenceIdentity.getInstance() );
 	System.out.println("pid="+pid);
-	
+
 	String s="(A,1,Te1)";
 	System.out.println(s.matches("\\([A-Z|_],\\d+,[A-z|0-9][A-z|0-9][A-z|0-9]\\)"));
-	*/
+	 */
     }
-
-
 }

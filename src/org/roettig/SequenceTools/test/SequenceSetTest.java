@@ -25,7 +25,7 @@ public class SequenceSetTest
 {
 
     private SequenceSet seqs;
-    
+
     /**
      * @throws java.lang.Exception
      */

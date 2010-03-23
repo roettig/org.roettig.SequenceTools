@@ -49,7 +49,7 @@ public class ASCMSATest extends TestCase
 	idx.add(5);
 	idx.add(9);
 	asc1.setASCIdx(idx);
-	
+
 	SequenceSet sigs = null;
 	try
 	{
@@ -73,7 +73,7 @@ public class ASCMSATest extends TestCase
 	    fail("could not create tempfile");
 	}
 	asc1.store(tmp.getAbsoluteFile().toString());
-	
+
 	ASCMSA asc2 = null;
 	try
 	{
@@ -89,11 +89,11 @@ public class ASCMSATest extends TestCase
 	    e.printStackTrace();
 	    fail("could not load ASCMSA file");
 	}
-	
+
 	SequenceSet sigs2 = asc2.getSignatures("pdb");
 	assertEquals(sigs2.getById("1").seqString(),"LWE");
 	assertEquals(sigs2.getById("2").seqString(),"LWE");
-	
+
 	tmp.delete();
     }
 
@@ -121,6 +121,6 @@ public class ASCMSATest extends TestCase
 	SequenceSet sigs2 = asc1.getSignatures("pdb");
 	assertEquals(sigs2.getById("1").seqString(),"LWE");
 	assertEquals(sigs2.getById("2").seqString(),"LWE");
-	
+
     }    
 }

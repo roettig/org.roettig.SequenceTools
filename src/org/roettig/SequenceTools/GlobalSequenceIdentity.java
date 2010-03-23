@@ -14,11 +14,11 @@ package org.roettig.SequenceTools;
 public class GlobalSequenceIdentity implements SequenceIdentity
 {
     private static SequenceIdentity instance = null;
-    
+
     private GlobalSequenceIdentity()
     {
     }
-    
+
     public static SequenceIdentity getInstance() 
     {
 	if (instance == null) 
@@ -26,8 +26,8 @@ public class GlobalSequenceIdentity implements SequenceIdentity
 	    instance = new GlobalSequenceIdentity();
 	}
 	return instance;
-     }
-    
+    }
+
     /**
      *  Calculate the global sequence identity between the two given sequence strings.
      * 
