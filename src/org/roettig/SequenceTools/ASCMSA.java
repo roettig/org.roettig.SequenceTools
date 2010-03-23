@@ -24,11 +24,20 @@ public class ASCMSA extends MSA
 
     protected Set<Integer> ascidx = new TreeSet<Integer>();
 
+    /**
+     * Default constructor.
+     * 
+     */
     public ASCMSA()
     {
 	super();
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param msa
+     */
     public ASCMSA(MSA msa)
     {
 	super();
@@ -98,7 +107,14 @@ public class ASCMSA extends MSA
 	super.store(filename);
     }
 
-
+    /**
+     * Creation method that loads an ASCMSA from file.
+     * 
+     * @param filename
+     * @return ASCMSA
+     * @throws FileNotFoundException
+     * @throws FileParseErrorException
+     */
     public static ASCMSA loadFromFile(String filename) throws FileNotFoundException, FileParseErrorException
     {
 	ASCMSA ret = new ASCMSA();
@@ -166,28 +182,4 @@ public class ASCMSA extends MSA
     {
 	return this.getSubSequences(ascidx,"pdb"); 
     }
-
-    public static void main(String[] args) throws Exception
-    {	
-	ASCMSA ascmsa = new ASCMSA();
-	ascmsa.load("/tmp/all.asc");
-
-	SequenceSet ss = ascmsa.getSignatures();
-	ss.store("/tmp/raus");
-
-	/*
-	List<Integer> idx = new Vector<Integer>();
-	idx.add(4);
-	ascmsa.setASCIdx(idx);
-	ascmsa.store("/tmp/raus2");
-
-	ascmsa.load("/tmp/raus2");
-
-	System.out.println(ascmsa.getById("pdb").seqString());
-
-	SequenceSet sss = ascmsa.getSignatures();
-	sss.store("/tmp/raus3");
-	 */
-    }
-
 }
