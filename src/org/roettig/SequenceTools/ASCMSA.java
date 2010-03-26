@@ -23,7 +23,8 @@ public class ASCMSA extends MSA
 {
 
     protected Set<Integer> ascidx = new TreeSet<Integer>();
-
+    protected String template_id = "pdb";
+    
     /**
      * Default constructor.
      * 
@@ -45,6 +46,11 @@ public class ASCMSA extends MSA
 	{
 	    this.add(s);
 	}
+    }
+    
+    public void setTemplateId(String tmplid)
+    {
+	template_id = tmplid;
     }
 
 

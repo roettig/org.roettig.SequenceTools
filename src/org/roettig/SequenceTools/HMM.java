@@ -143,31 +143,35 @@ public class HMM
 		hmmstring += str+"\n";
 	    }
 	    in.close();
-	    //System.out.println("hmmstring="+hmmstring.substring(0,30));
 	} 
 	catch (IOException e) 
 	{
 	    e.printStackTrace();    
 	}
     }  
+    
+    public void save(String filename) throws IOException
+    {
+	saveToFile(filename);
+    }
 
     /**
      * Save HMM to file.
      * 
      * @param filename
      */
-    private void saveToFile(String filename)
+    private void saveToFile(String filename)  throws IOException
     {
-	try
-	{
+//	try
+//	{
 	    BufferedWriter os = new BufferedWriter(new FileWriter(filename));
 	    os.write(hmmstring);
 	    os.close();
-	}
-	catch(IOException e)
-	{
-	    e.printStackTrace();
-	}
+//	}
+//	catch(IOException e)
+//	{
+//	    e.printStackTrace();
+//	}
     }
 
     public MSA align(SequenceSet seqs) throws Exception

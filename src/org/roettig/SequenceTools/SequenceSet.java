@@ -29,6 +29,19 @@ public class SequenceSet implements Iterable<Sequence>
 	seqs = new Vector<Sequence>();
     }
 
+    /**
+     * Copy ctor.
+     * @param seqs
+     */
+    public SequenceSet(SequenceSet seqs)
+    {
+	for(Sequence s:seqs)
+	{
+	    Sequence sclone = SeqTools.makeProteinSequence(s.getName(),s.seqString());
+	    seqs.add(sclone);
+	}
+    }
+    
     public SequenceSet(List<Sequence> seqs)
     {
 	this();
