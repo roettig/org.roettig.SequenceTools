@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,19 +27,21 @@ import org.roettig.SequenceTools.helper.ClientHttpRequest;
  */
 public class ThreeDCoffeeAlignment
 {
+    public static Logger logger = Logger.getLogger("org.roettig.SequenceTools.ThreeDCoffeeAlignment");
+    
     private String PID;
     private SequenceSet seqs = new SequenceSet();
     private Map<String,String> masked_name_2_orig_name = new HashMap<String,String>();
     
     private static String RESULTURL = "http://www.igs.cnrs-mrs.fr/Tcoffee/Tmp/EXPA/";
     
-    public static boolean isFinished(String job)
+    public boolean isFinished(String job)
     {
 	URL url = null;
 	BufferedReader in = null;
 	try
 	{
-	    url = new URL(RESULTURL+job);
+	    url = new URL(RESULTURL+job+".file_result.html");
 	    in = new BufferedReader(new InputStreamReader(url.openStream()));
 	    String line;
 	    while ((line = in.readLine()) != null)
@@ -76,7 +79,7 @@ public class ThreeDCoffeeAlignment
 	}
     }
     
-    private static String fetchPID() throws IOException
+    private String fetchPID() throws IOException
     {
 	URL url = new URL("http://www.igs.cnrs-mrs.fr/Tcoffee/tcoffee_cgi/index.cgi?stage1=1&daction=EXPRESSO(3DCoffee)::Advanced");
 	BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -101,13 +104,25 @@ public class ThreeDCoffeeAlignment
 	return ret;
     }
     
-    public void align() throws Exception
+    public MSA align() throws Exception
     {
 	PID = fetchPID();
 	wrapSequences();
 	sendData();
 	fetchData();
+	unwrapSequences();
+	return msa;
     }
+    
+    public MSA fetchMSA(String _jobid) throws Exception
+    {
+	jobid = _jobid;
+	fetchData();
+	unwrapSequences();
+	return msa;
+    }
+    
+    
 
     private void sendData() throws IOException
     {
@@ -129,7 +144,7 @@ public class ThreeDCoffeeAlignment
 	 InputStream is = req.post();
 
 	 BufferedReader bis = new BufferedReader(new InputStreamReader(is) );
-	 String line; 
+	 String line=null; 
 	 while ((line = bis.readLine()) != null) 
 	 { 
 	     //System.out.println(line);
@@ -147,11 +162,12 @@ public class ThreeDCoffeeAlignment
 		     //String s = "feedback.cgi?level=Advanced&child=8132&result_file=tcfEXPA99715_8130.file_result.html&pg_source=/home/igs/public_html/Tcoffee/tcoffee_cgi/index.cgi&time_init=1269625526&email=&mode=EXPRESSO(3DCoffee)";
 		     String toks1[] = vs.split("&");
 		     String toks2[] = toks1[2].split("=");
-		     System.out.println(toks2[1]);
+		     //System.out.println(toks2[1]);
 		     joburl = toks2[1];
 		     String toks3[] = joburl.split("\\.");
 		     jobid  = toks3[0]; 
-		     System.out.println("jobid="+jobid);
+		     //System.out.println("jobid="+jobid);
+		     logger.info("submitted job with job-id "+jobid);
 		 }
 
 	     }
@@ -184,7 +200,12 @@ public class ThreeDCoffeeAlignment
 	boolean ready  = false;
 	for(int i=0;i<nSteps;i++)
 	{
-	    System.out.println("Waiting");
+	    logger.info("waiting for result ("+((i+1)*nSecs)+" sec)");
+	    if(isFinished(jobid))
+	    {
+		ready = true;
+		logger.info("finished");
+	    }	    
 	    if(ready)
 		break;
 	    try
@@ -195,33 +216,45 @@ public class ThreeDCoffeeAlignment
 	    {
 		e.printStackTrace();
 	    }
-	    if(isFinished(joburl))
-	    {
-		ready = true;
-		System.out.println("Finished");
-	    }
 	}
 	if(ready)
 	{
 	    URL url = new URL(RESULTURL+jobid+".fasta_aln");
 	    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-	    SequenceSet rseqs = SequenceSet.readFromReader(in);
-	    rseqs.store("/tmp/result.afa");
+	    resultseqs  = SequenceSet.readFromReader(in);
+	    resultseqs.store("/tmp/result.afa");
+	    //msa = new MSA(rseqs);
 	}
 
     }
     
+    private void unwrapSequences()
+    {
+	msaseqs = new SequenceSet();
+	for(Sequence s: resultseqs)
+	{
+	    Sequence sclone = SeqTools.makeProteinSequence(masked_name_2_orig_name.get(s.getName()), s.seqString());
+	    msaseqs.add(sclone);
+	}
+	msa = new MSA(msaseqs);
+    }
+
+    private MSA msa;
+    private SequenceSet msaseqs;
+    private SequenceSet resultseqs;
     private String joburl = "";
 
     public static void main(String[] args) throws Exception
     {
-	System.setProperty("http.proxyHost", "134.2.12.41");
-	System.setProperty("http.proxyPort", "3128");
+	//System.setProperty("http.proxyHost", "134.2.12.41");
+	//System.setProperty("http.proxyPort", "3128");
 
 	//ThreeDCoffeeAlignment.fetchPID();
 	ThreeDCoffeeAlignment ali = new ThreeDCoffeeAlignment( SequenceSet.readFromFile("/tmp/seqs.fa") );
-	ali.align();
-	
+	//MSA msa = ali.align();
+	//tcfEXPA56678_32065
+	MSA msa = ali.fetchMSA("tcfEXPA56678_32065");
+	msa.store("/tmp/raus.msa");
 	
 	
     }

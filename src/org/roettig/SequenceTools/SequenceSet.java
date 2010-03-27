@@ -33,9 +33,10 @@ public class SequenceSet implements Iterable<Sequence>
      * Copy ctor.
      * @param seqs
      */
-    public SequenceSet(SequenceSet seqs)
+    public SequenceSet(SequenceSet _seqs)
     {
-	for(Sequence s:seqs)
+	this();
+	for(Sequence s: _seqs)
 	{
 	    Sequence sclone = SeqTools.makeProteinSequence(s.getName(),s.seqString());
 	    seqs.add(sclone);

@@ -26,6 +26,12 @@ public class MSA implements Iterable<Sequence>
 	seqs    = new SequenceSet();
 	quality = new HashMap<Integer,Integer>();
     }
+    
+    public MSA(SequenceSet _seqs)
+    {
+	seqs    = new SequenceSet(_seqs);
+	quality = new HashMap<Integer,Integer>();
+    }
 
     private static void checkMusclePath() throws Exception
     {
