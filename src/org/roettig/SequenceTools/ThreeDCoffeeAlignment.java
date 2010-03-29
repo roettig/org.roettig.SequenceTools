@@ -66,7 +66,7 @@ public class ThreeDCoffeeAlignment
 	
     }
     
-    ThreeDCoffeeAlignment(SequenceSet _seqs)
+    public ThreeDCoffeeAlignment(SequenceSet _seqs)
     {
 	int idx = 1;
 	for(Sequence s: _seqs)

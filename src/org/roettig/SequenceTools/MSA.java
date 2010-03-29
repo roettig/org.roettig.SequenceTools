@@ -191,6 +191,31 @@ public class MSA implements Iterable<Sequence>
 	    add( s );
 	}
     }
+    
+    public static MSA align(MSA msa, SequenceSet seqs)
+    {
+	HMM hmm = null;
+	try
+	{
+	    hmm = new HMM(msa);
+	} 
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	}
+	
+	MSA ret = null;
+	
+	try
+	{
+	    ret = hmm.align(seqs);
+	} 
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	}
+	return ret;
+    }
 
     /**
      * Get sequence in MSA by ID.
