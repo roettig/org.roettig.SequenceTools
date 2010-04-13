@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -20,7 +21,7 @@ import java.util.*;
  *
  */
 
-public class SequenceSet implements Iterable<Sequence>
+public class SequenceSet implements Iterable<Sequence>, Serializable
 {
     private List<Sequence> seqs = null;
 

@@ -15,7 +15,7 @@ import org.roettig.SequenceTools.exception.FileParseErrorException;
  * 
  * @author roettig
  */
-public class MSA implements Iterable<Sequence>
+public class MSA implements Iterable<Sequence>, Serializable
 {
     protected SequenceSet seqs = null;
     protected HashMap<Integer,Integer> quality = null;
