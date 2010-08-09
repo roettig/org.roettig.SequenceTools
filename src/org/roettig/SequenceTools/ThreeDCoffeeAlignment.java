@@ -33,7 +33,14 @@ public class ThreeDCoffeeAlignment
     private SequenceSet seqs = new SequenceSet();
     private Map<String,String> masked_name_2_orig_name = new HashMap<String,String>();
     
-    private static String RESULTURL = "http://www.igs.cnrs-mrs.fr/Tcoffee/Tmp/EXPA/";
+    private static String CGIURL2    = "http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi";
+    private static String RESULTURL2 = "http://tcoffee.vital-it.ch/Tmp/EXPA/";
+    private static String CGIURL1    = "http://www.igs.cnrs-mrs.fr/Tcoffee/tcoffee_cgi/index.cgi";
+    private static String RESULTURL1 = "http://www.igs.cnrs-mrs.fr/Tcoffee/Tmp/EXPA/";
+    
+    private String CGIURL    = CGIURL1;
+    private String SUBMITURL = CGIURL+"?stage1=1&daction=EXPRESSO(3DCoffee)::Advanced";
+    private String RESULTURL = RESULTURL1;
     
     public boolean isFinished(String job)
     {
@@ -81,7 +88,8 @@ public class ThreeDCoffeeAlignment
     
     private String fetchPID() throws IOException
     {
-	URL url = new URL("http://www.igs.cnrs-mrs.fr/Tcoffee/tcoffee_cgi/index.cgi?stage1=1&daction=EXPRESSO(3DCoffee)::Advanced");
+	//URL url = new URL("http://www.igs.cnrs-mrs.fr/Tcoffee/tcoffee_cgi/index.cgi?stage1=1&daction=EXPRESSO(3DCoffee)::Advanced");
+	URL url = new URL(SUBMITURL);
 	BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 	
 	String ret = null;
@@ -99,8 +107,18 @@ public class ThreeDCoffeeAlignment
 	        if(result)
 	            ret = m.group(1);
 	    }
+	    else
+	    if(line.indexOf("<input type='hidden' name='pid' value='")!=-1)
+	    {
+	        Pattern p = Pattern.compile("pid' value='(\\d+)'");
+	        Matcher m = p.matcher(line);
+	        boolean result = m.find();
+	        if(result)
+	            ret = m.group(1);
+	    }
 	}
 	in.close();
+	logger.info("acquired PID "+ret);
 	return ret;
     }
     
@@ -126,7 +144,8 @@ public class ThreeDCoffeeAlignment
 
     private void sendData() throws IOException
     {
-	 ClientHttpRequest req = new ClientHttpRequest("http://www.igs.cnrs-mrs.fr/Tcoffee/tcoffee_cgi/index.cgi");
+	 //ClientHttpRequest req = new ClientHttpRequest("http://www.igs.cnrs-mrs.fr/Tcoffee/tcoffee_cgi/index.cgi");
+	 ClientHttpRequest req = new ClientHttpRequest(CGIURL);
 	 req.setParameter("stage2","2"); 
 	 req.setParameter("pid",PID);
 	 req.setParameter("daction","EXPRESSO(3DCoffee)::Advanced");
@@ -195,12 +214,17 @@ public class ThreeDCoffeeAlignment
     
     private void fetchData() throws Exception
     {
-	int     nSteps = 10;
+	int     nSteps = 20;
 	int     nSecs  = 30;
 	boolean ready  = false;
+	int     wait   = 0;
 	for(int i=0;i<nSteps;i++)
 	{
-	    logger.info("waiting for result ("+((i+1)*nSecs)+" sec)");
+	    
+	    if(i==10)
+		nSecs=120;
+	    
+	    logger.info("waiting for result ("+wait+" sec)");
 	    if(isFinished(jobid))
 	    {
 		ready = true;
@@ -216,13 +240,14 @@ public class ThreeDCoffeeAlignment
 	    {
 		e.printStackTrace();
 	    }
+	    wait+=nSecs;
 	}
 	if(ready)
 	{
 	    URL url = new URL(RESULTURL+jobid+".fasta_aln");
 	    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 	    resultseqs  = SequenceSet.readFromReader(in);
-	    resultseqs.store("/tmp/result.afa");
+	    //resultseqs.store("/tmp/result.afa");
 	    //msa = new MSA(rseqs);
 	}
 
@@ -246,15 +271,15 @@ public class ThreeDCoffeeAlignment
 
     public static void main(String[] args) throws Exception
     {
-	//System.setProperty("http.proxyHost", "134.2.12.41");
-	//System.setProperty("http.proxyPort", "3128");
+	System.setProperty("http.proxyHost", "134.2.12.41");
+	System.setProperty("http.proxyPort", "3128");
 
 	//ThreeDCoffeeAlignment.fetchPID();
 	ThreeDCoffeeAlignment ali = new ThreeDCoffeeAlignment( SequenceSet.readFromFile("/tmp/seqs.fa") );
-	//MSA msa = ali.align();
+	MSA msa = ali.align();
 	//tcfEXPA56678_32065
-	MSA msa = ali.fetchMSA("tcfEXPA56678_32065");
-	msa.store("/tmp/raus.msa");
+	//MSA msa = ali.fetchMSA("tcfEXPA56678_32065");
+	//msa.store("/tmp/raus.msa");
 	
 	
     }

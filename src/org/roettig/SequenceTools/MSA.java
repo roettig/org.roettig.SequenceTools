@@ -2,6 +2,8 @@ package org.roettig.SequenceTools;
 
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeMap;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -35,6 +37,7 @@ public class MSA implements Iterable<Sequence>, Serializable
 
     private static void checkMusclePath() throws Exception
     {
+	/*
 	// msa.props must be in classpath
 	URL url =  ClassLoader.getSystemResource("msa.props");
 
@@ -73,6 +76,13 @@ public class MSA implements Iterable<Sequence>, Serializable
 	    }
 	}
 	System.out.println("MUSCLEPATH="+MUSCLEPATH);
+	*/
+	
+	String path = System.getProperty("musclepath");
+	if(path!=null)
+	    MUSCLEPATH = path;
+	else
+	    MUSCLEPATH = "/usr/bin";
 
     }
 
@@ -325,6 +335,7 @@ public class MSA implements Iterable<Sequence>, Serializable
 	}
 	return ret;
     }
+    
 
     /**
      * Get all columns with indices given by <i>cols</i>. Indices are interpreted

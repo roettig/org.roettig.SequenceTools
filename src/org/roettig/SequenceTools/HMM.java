@@ -27,6 +27,7 @@ public class HMM
 
     public HMM(MSA msa) throws Exception
     {
+	/*
 	if(HMMERPATH==null)
 	{
 	    URL url =  ClassLoader.getSystemResource("hmmer.props");
@@ -61,7 +62,14 @@ public class HMM
 		}
 	    }
 	}
-
+	*/
+	
+	String path = System.getProperty("hmmerpath");
+	if(path!=null)
+	    HMMERPATH = path;
+	else
+	    HMMERPATH = "/usr/bin";
+	
 	createHMM(msa);
     }
 
@@ -102,6 +110,7 @@ public class HMM
 	// store MSA in filesystem 
 	msa.store(tmpIn.getAbsoluteFile().toString());
 
+	
 	try
 	{
 	    ProcessBuilder builder = new ProcessBuilder( "/bin/bash", "-c", HMMERPATH+"/hmmbuild -g -F "+tmpOut.toString()+" "+tmpIn.toString()); 

@@ -121,6 +121,14 @@ public class SeqTools
 	    return 0;
 	return BLOSUM62[idx1][idx2];
     }
+    
+    public static double getBLOSUM62ScoreSeq(String x, String y)
+    {
+	double sum = 0.0;
+	for(int i=0;i<x.length();i++)
+	    sum += getBLOSUM62Score(x.charAt(i), y.charAt(i));
+	return sum;
+    }
 
     public static double getNormalizedBLOSUM62ScoreSeq(String x, String y)
     {

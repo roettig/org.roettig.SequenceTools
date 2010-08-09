@@ -3,7 +3,10 @@ import org.biojava.bio.seq.*;
 import org.biojava.bio.*;
 import org.biojavax.bio.seq.RichSequence;
 import org.biojavax.bio.seq.RichSequenceIterator;
+import org.biojavax.bio.seq.io.FastaFormat;
 import org.biojavax.bio.seq.io.FastaHeader;
+import org.biojavax.bio.seq.io.RichSequenceBuilderFactory;
+import org.biojavax.bio.seq.io.RichStreamReader;
 import org.roettig.SequenceTools.exception.FileParseErrorException;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -74,15 +77,15 @@ public class SequenceSet implements Iterable<Sequence>, Serializable
     
     public static void main(String args[]) throws NoSuchElementException, BioException, IOException
     {
-	/*
-	BufferedReader br = new BufferedReader(new FileReader("/tmp/test.fa") );
-	RichSequenceIterator iter = RichSequence.IOTools.readFastaProtein(br,null);
+	
+	BufferedReader br = new BufferedReader(new FileReader("/tmp/1.fa") );
+	RichSequenceIterator iter = new RichStreamReader(br, new CustomFastaFormat(), ProteinTools.getTAlphabet().getTokenization("token"), RichSequenceBuilderFactory.FACTORY, null); //RichSequence.IOTools.readFastaProtein(br,null);
 	while(iter.hasNext())
 	{
 	    Sequence seq = iter.nextSequence();
 	    System.out.println(seq.getName()+" "+seq.seqString());
 	}
-	*/
+	
 	/*
 	RichSequenceIterator iter = RichSequence.IOTools.readFile(new File("/tmp/test.fa"),null);
 	while(iter.hasNext())
@@ -116,7 +119,19 @@ public class SequenceSet implements Iterable<Sequence>, Serializable
     public static SequenceSet readFromReader(BufferedReader br) throws FileParseErrorException
     {
 	SequenceSet          ret  = new SequenceSet();
-	RichSequenceIterator iter = RichSequence.IOTools.readFastaProtein(br,null);
+	//RichSequenceIterator iter = RichSequence.IOTools.readFastaProtein(br,null);
+	//RichSequence.IOTools.readFastaProtein(br,null);
+	RichSequenceIterator iter = null;
+	try
+	{
+	    iter = new RichStreamReader(br, new CustomFastaFormat(), ProteinTools.getTAlphabet().getTokenization("token"), RichSequenceBuilderFactory.FACTORY, null);
+	} 
+	catch (BioException e1)
+	{
+	    e1.printStackTrace();
+	    throw new FileParseErrorException();
+	}
+	
 	while(iter.hasNext())
 	{
 	    Sequence seq = null;
