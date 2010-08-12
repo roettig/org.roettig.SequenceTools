@@ -66,6 +66,7 @@ public class PairwiseAlignment
 	gap_open = _e;
     }
 
+    
     /**
      * Align the two sequences.
      * 
