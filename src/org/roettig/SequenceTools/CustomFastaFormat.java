@@ -18,14 +18,13 @@ import org.biojavax.bio.seq.io.RichSeqIOListener;
 public class CustomFastaFormat extends FastaFormat
 {
 
-    @Override
-    public void processHeader(String line, RichSeqIOListener rsiol,
-	    Namespace ns) throws IOException, ParseException
-    {
-	line = line.trim();
-	rsiol.setAccession("");
-	rsiol.setNamespace((ns==null?RichObjectFactory.getDefaultNamespace():ns));
-	rsiol.setName(line.substring(1));
-    }
-    
+	@Override
+	public void processHeader(String line, RichSeqIOListener rsiol, Namespace ns) throws IOException, ParseException
+	{
+		line = line.trim();
+		rsiol.setAccession("");
+		rsiol.setNamespace((ns==null?RichObjectFactory.getDefaultNamespace():ns));
+		rsiol.setName(line.substring(1));
+	}
+
 }

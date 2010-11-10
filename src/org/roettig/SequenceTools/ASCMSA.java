@@ -22,170 +22,170 @@ import org.roettig.SequenceTools.exception.FileParseErrorException;
 public class ASCMSA extends MSA
 {
 
-    protected Set<Integer> ascidx = new TreeSet<Integer>();
-    protected String template_id = "pdb";
-    
-    /**
-     * Default constructor.
-     * 
-     */
-    public ASCMSA()
-    {
-	super();
-    }
+	protected Set<Integer> ascidx = new TreeSet<Integer>();
+	protected String template_id = "pdb";
 
-    /**
-     * Constructor.
-     * 
-     * @param msa
-     */
-    public ASCMSA(MSA msa)
-    {
-	super();
-	for(Sequence s: msa)
+	/**
+	 * Default constructor.
+	 * 
+	 */
+	public ASCMSA()
 	{
-	    this.add(s);
+		super();
 	}
-    }
-    
-    public void setTemplateId(String tmplid)
-    {
-	template_id = tmplid;
-    }
 
-
-    /**
-     * Set the indices of active site residues. 
-     * 
-     * @param idx indices of active site residues
-     */
-    public void setASCIdx(Set<Integer> idx)
-    {
-	ascidx.clear();
-	for(Integer i: idx)
+	/**
+	 * Constructor.
+	 * 
+	 * @param msa
+	 */
+	public ASCMSA(MSA msa)
 	{
-	    ascidx.add(i);
-	}
-    }
-
-    /**
-     * Set the indices of active site residues. 
-     * 
-     * @param idx indices of active site residues
-     */
-    public void setASCIdx(List<Integer> idx)
-    {
-	ascidx.clear();
-	for(Integer i: idx)
-	{
-	    ascidx.add(i);
-	}
-    }
-
-    /**
-     * Load an ASCMSA from file. 
-     * 
-     * @param filename 
-     */
-    @Override
-    public void store(String filename)
-    {
-	Sequence s = seqs.getById("pdb");
-
-	String idx = "";
-	for(Integer i: ascidx)
-	{
-	    idx+=String.format("_%d",i);
-	}
-	idx = idx.substring(0, idx.length());
-
-	Sequence prot = null;
-	try
-	{
-	    prot  = ProteinTools.createProteinSequence( s.seqString(),"pdb"+idx);
-	} 
-	catch (IllegalSymbolException e)
-	{
-	    e.printStackTrace();
-	}
-	seqs.remove(s);
-	seqs.add(prot);
-	super.store(filename);
-    }
-
-    /**
-     * Creation method that loads an ASCMSA from file.
-     * 
-     * @param filename
-     * @return ASCMSA
-     * @throws FileNotFoundException
-     * @throws FileParseErrorException
-     */
-    public static ASCMSA loadFromFile(String filename) throws FileNotFoundException, FileParseErrorException
-    {
-	ASCMSA ret = new ASCMSA();
-	ret.load(filename);
-	return ret;
-    }
-
-    /**
-     * Load an ASCMSA from file. 
-     * 
-     * @param filename 
-     */
-    @Override
-    public void load(String filename) throws FileNotFoundException, FileParseErrorException
-    {
-	super.load(filename);
-
-	for(Sequence s: seqs)
-	{
-	    if(s.getName().startsWith("pdb"))
-	    {
-		String sid = s.getName();
-
-		String toks[] = sid.split("_");
-		for(int i=1;i<toks.length;i++)
+		super();
+		for(Sequence s: msa)
 		{
-		    //System.out.println(Integer.parseInt(toks[i]));
-		    ascidx.add( Integer.parseInt(toks[i]) );
+			this.add(s);
 		}
+	}
+
+	public void setTemplateId(String tmplid)
+	{
+		template_id = tmplid;
+	}
+
+
+	/**
+	 * Set the indices of active site residues. 
+	 * 
+	 * @param idx indices of active site residues
+	 */
+	public void setASCIdx(Set<Integer> idx)
+	{
+		ascidx.clear();
+		for(Integer i: idx)
+		{
+			ascidx.add(i);
+		}
+	}
+
+	/**
+	 * Set the indices of active site residues. 
+	 * 
+	 * @param idx indices of active site residues
+	 */
+	public void setASCIdx(List<Integer> idx)
+	{
+		ascidx.clear();
+		for(Integer i: idx)
+		{
+			ascidx.add(i);
+		}
+	}
+
+	/**
+	 * Load an ASCMSA from file. 
+	 * 
+	 * @param filename 
+	 */
+	@Override
+	public void store(String filename)
+	{
+		Sequence s = seqs.getById("pdb");
+
+		String idx = "";
+		for(Integer i: ascidx)
+		{
+			idx+=String.format("_%d",i);
+		}
+		idx = idx.substring(0, idx.length());
 
 		Sequence prot = null;
 		try
 		{
-		    prot  = ProteinTools.createProteinSequence( s.seqString(),"pdb");
+			prot  = ProteinTools.createProteinSequence( s.seqString(),"pdb"+idx);
 		} 
 		catch (IllegalSymbolException e)
 		{
-		    e.printStackTrace();
+			e.printStackTrace();
 		}
 		seqs.remove(s);
 		seqs.add(prot);
-		break;
-	    }
+		super.store(filename);
 	}
 
-    }
+	/**
+	 * Creation method that loads an ASCMSA from file.
+	 * 
+	 * @param filename
+	 * @return ASCMSA
+	 * @throws FileNotFoundException
+	 * @throws FileParseErrorException
+	 */
+	public static ASCMSA loadFromFile(String filename) throws FileNotFoundException, FileParseErrorException
+	{
+		ASCMSA ret = new ASCMSA();
+		ret.load(filename);
+		return ret;
+	}
 
-    /**
-     * Get the signature sequences from the MSA. 
-     * 
-     * @param sid sequence ID of reference sequence
-     * @return SequenceSet
-     */
-    public SequenceSet getSignatures(String sid)
-    {
-	return this.getSubSequences(ascidx,sid); 
-    }
+	/**
+	 * Load an ASCMSA from file. 
+	 * 
+	 * @param filename 
+	 */
+	@Override
+	public void load(String filename) throws FileNotFoundException, FileParseErrorException
+	{
+		super.load(filename);
 
-    /**
-     * Get the signature sequences from the MSA. 
-     * 
-     * @return SequenceSet
-     */
-    public SequenceSet getSignatures() throws Exception
-    {
-	return this.getSubSequences(ascidx,"pdb"); 
-    }
+		for(Sequence s: seqs)
+		{
+			if(s.getName().startsWith("pdb"))
+			{
+				String sid = s.getName();
+
+				String toks[] = sid.split("_");
+				for(int i=1;i<toks.length;i++)
+				{
+					//System.out.println(Integer.parseInt(toks[i]));
+					ascidx.add( Integer.parseInt(toks[i]) );
+				}
+
+				Sequence prot = null;
+				try
+				{
+					prot  = ProteinTools.createProteinSequence( s.seqString(),"pdb");
+				} 
+				catch (IllegalSymbolException e)
+				{
+					e.printStackTrace();
+				}
+				seqs.remove(s);
+				seqs.add(prot);
+				break;
+			}
+		}
+
+	}
+
+	/**
+	 * Get the signature sequences from the MSA. 
+	 * 
+	 * @param sid sequence ID of reference sequence
+	 * @return SequenceSet
+	 */
+	public SequenceSet getSignatures(String sid)
+	{
+		return this.getSubSequences(ascidx,sid); 
+	}
+
+	/**
+	 * Get the signature sequences from the MSA. 
+	 * 
+	 * @return SequenceSet
+	 */
+	public SequenceSet getSignatures() throws Exception
+	{
+		return this.getSubSequences(ascidx,"pdb"); 
+	}
 }

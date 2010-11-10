@@ -22,49 +22,49 @@ import org.roettig.SequenceTools.SequenceIdentity;
  */
 public class SequenceIdentityTest extends TestCase
 {
-    @Test
-    public void testAlignedSequenceIdentity()
-    {
-	SequenceIdentity calc_sid = AlignedSequenceIdentity.getInstance();
-	Sequence s1 = SeqTools.makeProteinSequence("1", "LKWPETER");
-	Sequence s2 = SeqTools.makeProteinSequence("2", "LKHPETE");
-	PairwiseAlignment pwa = new PairwiseAlignment();
-	double sid=0;
-	try
+	@Test
+	public void testAlignedSequenceIdentity()
 	{
-	    sid = pwa.align(s1, s2, calc_sid );
-	} 
-	catch (IllegalSymbolException e)
-	{
-	    e.printStackTrace();
-	} 
-	catch (ChangeVetoException e)
-	{
-	    e.printStackTrace();
+		SequenceIdentity calc_sid = AlignedSequenceIdentity.getInstance();
+		Sequence s1 = SeqTools.makeProteinSequence("1", "LKWPETER");
+		Sequence s2 = SeqTools.makeProteinSequence("2", "LKHPETE");
+		PairwiseAlignment pwa = new PairwiseAlignment();
+		double sid=0;
+		try
+		{
+			sid = pwa.align(s1, s2, calc_sid );
+		} 
+		catch (IllegalSymbolException e)
+		{
+			e.printStackTrace();
+		} 
+		catch (ChangeVetoException e)
+		{
+			e.printStackTrace();
+		}
+		assertEquals(sid,0.8571428571428571,1e-8);
 	}
-	assertEquals(sid,0.8571428571428571,1e-8);
-    }
 
-    @Test
-    public void testGlobalSequenceIdentity()
-    {
-	SequenceIdentity calc_sid = GlobalSequenceIdentity.getInstance();
-	Sequence s1 = SeqTools.makeProteinSequence("1", "LKWPETER");
-	Sequence s2 = SeqTools.makeProteinSequence("2", "LKHPETE");
-	PairwiseAlignment pwa = new PairwiseAlignment();
-	double sid=0;
-	try
+	@Test
+	public void testGlobalSequenceIdentity()
 	{
-	    sid = pwa.align(s1, s2, calc_sid );
-	} 
-	catch (IllegalSymbolException e)
-	{
-	    e.printStackTrace();
-	} 
-	catch (ChangeVetoException e)
-	{
-	    e.printStackTrace();
+		SequenceIdentity calc_sid = GlobalSequenceIdentity.getInstance();
+		Sequence s1 = SeqTools.makeProteinSequence("1", "LKWPETER");
+		Sequence s2 = SeqTools.makeProteinSequence("2", "LKHPETE");
+		PairwiseAlignment pwa = new PairwiseAlignment();
+		double sid=0;
+		try
+		{
+			sid = pwa.align(s1, s2, calc_sid );
+		} 
+		catch (IllegalSymbolException e)
+		{
+			e.printStackTrace();
+		} 
+		catch (ChangeVetoException e)
+		{
+			e.printStackTrace();
+		}
+		assertEquals(sid,0.75,1e-8);		
 	}
-	assertEquals(sid,0.75,1e-8);		
-    }
 }

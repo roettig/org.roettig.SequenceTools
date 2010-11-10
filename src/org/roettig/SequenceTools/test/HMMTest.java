@@ -18,45 +18,45 @@ import org.roettig.SequenceTools.SequenceSet;
 public class HMMTest extends TestCase
 {
 
-    private HMM hmm = null;
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception
-    {
-	MSA msa = null;
-	try
+	private HMM hmm = null;
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@Before
+	public void setUp() throws Exception
 	{
-	    SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test.fa").getFile());
-	    msa = MSA.createMuscleMSA(seqs);
-	} 
-	catch (Exception e)
-	{
-	    e.printStackTrace();
-	    fail("createMuscleMSA failed");
+		MSA msa = null;
+		try
+		{
+			SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test.fa").getFile());
+			msa = MSA.createMuscleMSA(seqs);
+		} 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			fail("createMuscleMSA failed");
+		}
+		hmm = new HMM(msa);
 	}
-	hmm = new HMM(msa);
-    }
 
-    /**
-     * Test method for {@link org.roettig.SequenceTools.HMM#align(org.roettig.SequenceTools.SequenceSet)}.
-     */
-    @Test
-    public void testAlign()
-    {
-	MSA ali = null;
-	try
-	{	
-	    SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test2.fa").getFile());
-	    ali = hmm.align(seqs);
-	} 
-	catch (Exception e)
+	/**
+	 * Test method for {@link org.roettig.SequenceTools.HMM#align(org.roettig.SequenceTools.SequenceSet)}.
+	 */
+	@Test
+	public void testAlign()
 	{
-	    e.printStackTrace();
-	    fail("align failed");
+		MSA ali = null;
+		try
+		{	
+			SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test2.fa").getFile());
+			ali = hmm.align(seqs);
+		} 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			fail("align failed");
+		}
+		assertEquals("",ali.getById("3").seqString(),"KGIAIEHQGLTNYIWWARRVYVKGEKTNFPLYSSIAFDLTITSVFTPLITGNAIIVY--GGENSTALLDSIIQDSRADIIKLTPAHLQ-LLKEINI---PAECTIRKFIVGGDNLSTRLARSISGKFGGKIEIFNEYGPTETVVGCMI");
 	}
-	assertEquals("",ali.getById("3").seqString(),"KGIAIEHQGLTNYIWWARRVYVKGEKTNFPLYSSIAFDLTITSVFTPLITGNAIIVY--GGENSTALLDSIIQDSRADIIKLTPAHLQ-LLKEINI---PAECTIRKFIVGGDNLSTRLARSISGKFGGKIEIFNEYGPTETVVGCMI");
-    }
 
 }
