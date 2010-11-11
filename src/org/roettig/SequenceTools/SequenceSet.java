@@ -26,6 +26,9 @@ import java.util.*;
 
 public class SequenceSet implements Iterable<Sequence>, Serializable
 {
+
+	private static final long	serialVersionUID	= 4142771855458239633L;
+	
 	private List<Sequence> seqs = null;
 
 	public SequenceSet()
@@ -192,7 +195,6 @@ public class SequenceSet implements Iterable<Sequence>, Serializable
 		for(Sequence s: seqs)
 		{
 			ids.addElement( s.getName() );
-			System.out.println( s.getName() );
 		}
 		return ids;
 	}
