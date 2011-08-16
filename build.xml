@@ -7,7 +7,7 @@
 	<target name="compile" depends="prepare">
 		
 		<!-- compile class files -->
-		<javac srcdir="." destdir="build/classes" includeantruntime="no">
+		<javac srcdir="." destdir="build/classes" includeantruntime="no" target="1.6">
 			<classpath>
 				<pathelement location="lib/biojava.jar"/>
 				<pathelement location="lib/bytecode.jar"/>
@@ -18,8 +18,10 @@
 		
 		<!-- copy sources -->
 		<copy todir="build/classes">
-		   <fileset dir="src" includes="**/*.java"/>
+		   	<fileset dir="src" includes="**/*.java"/>
+			<fileset dir="src" includes="resources/*"/>
 		</copy>
+		
 		
 	</target>
 	
