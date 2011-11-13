@@ -11,7 +11,6 @@ import org.roettig.SequenceTools.MSA;
 import org.roettig.SequenceTools.PairwiseAlignment;
 import org.roettig.SequenceTools.base.Sequence;
 import org.roettig.SequenceTools.base.SequenceContainer;
-import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
 import org.roettig.SequenceTools.format.FastaReader;
 
 /**
@@ -28,7 +27,7 @@ public class MSATest extends TestCase
 	{
 		try
 		{
-			SequenceContainer seqs = DefaultSequenceContainer.readFromFile(new FastaReader(PairwiseAlignment.class.getResource("/resources/test.fa").getFile().toString()));
+			SequenceContainer seqs = new FastaReader().read(PairwiseAlignment.class.getResourceAsStream("/resources/test.fa"));
 			msa = MSA.createMuscleMSA(seqs);
 		} 
 		catch (Exception e)
@@ -47,7 +46,7 @@ public class MSATest extends TestCase
 		MSA msa = null;
 		try
 		{
-			SequenceContainer seqs = DefaultSequenceContainer.readFromFile(new FastaReader(PairwiseAlignment.class.getResource("/resources/test.fa").getFile().toString()));
+			SequenceContainer seqs = new FastaReader().read(PairwiseAlignment.class.getResourceAsStream("/resources/test.fa"));
 			msa = MSA.createMuscleMSA(seqs);
 		} 
 		catch (Exception e)
@@ -55,6 +54,7 @@ public class MSATest extends TestCase
 			e.printStackTrace();
 			fail("createMuscleMSA failed");
 		}
+		msa.store("/tmp/raus.seqxml");
 	}
 
 	/**

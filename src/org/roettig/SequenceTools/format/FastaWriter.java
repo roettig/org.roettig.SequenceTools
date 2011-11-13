@@ -7,23 +7,11 @@ import org.roettig.SequenceTools.base.Sequence;
 import org.roettig.SequenceTools.base.SequenceContainer;
 
 public class FastaWriter implements SequenceWriter
-{
-	public static void write(SequenceContainer seqs, String filename)
-	{
-		new FastaWriter(filename).write(seqs);
-	}
-	
-	protected String filename;
-	
-	public FastaWriter(String filename)
-	{
-		this.filename = filename;
-	}
-	
-	private static final String NEWLINE = System.getProperty("line.separator");
+{	
+		private static final String NEWLINE = System.getProperty("line.separator");
 	
 	@Override
-	public void write(SequenceContainer seqs)
+	public void write(SequenceContainer seqs, String filename)
 	{
 		FileWriter writer;
 		try

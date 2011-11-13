@@ -36,6 +36,11 @@ public class AnnotatedXMLConverter
 			type = "string";
 			val  = value.toString();
 		}
+		else if(value instanceof Boolean)
+		{
+			type = "bool";
+			val  = value.toString();
+		}
 		else if(value instanceof Object)
 		{
 			type = "object";

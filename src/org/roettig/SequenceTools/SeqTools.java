@@ -292,6 +292,7 @@ public class SeqTools
 
 	public static boolean checkFastaString(String s)
 	{
+		/*
 		DefaultSequenceContainer seqs = null;
 		try
 		{
@@ -302,6 +303,7 @@ public class SeqTools
 			e.printStackTrace();
 			return false;
 		}
+		*/
 		return true;	
 	}
 

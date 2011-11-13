@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.roettig.SequenceTools.PairwiseAlignment;
 import org.roettig.SequenceTools.base.SequenceContainer;
 import org.roettig.SequenceTools.base.impl.AlignedSequenceIdentity;
-import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
 import org.roettig.SequenceTools.exception.FileParseErrorException;
 import org.roettig.SequenceTools.format.FastaReader;
 
@@ -45,7 +44,7 @@ public class PairwiseAlignmentTest extends TestCase
 	@Test
 	public void testAlign() throws IllegalSymbolException, ChangeVetoException, FileNotFoundException, FileParseErrorException
 	{
-		SequenceContainer seqs = DefaultSequenceContainer.readFromFile(new FastaReader(PairwiseAlignment.class.getResource("/resources/test.fa").getFile().toString()));
+		SequenceContainer seqs = new FastaReader().read(PairwiseAlignment.class.getResourceAsStream("/resources/test.fa"));
 		PairwiseAlignment pwa = new PairwiseAlignment();
 		double pid = pwa.align( seqs.getByIndex(0).getSequenceString(), seqs.getByIndex(1).getSequenceString(), AlignedSequenceIdentity.getInstance() );
 		assertEquals("pid of alignment",0.23404255319148937,pid,1e-8);

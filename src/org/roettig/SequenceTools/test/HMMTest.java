@@ -30,7 +30,7 @@ public class HMMTest extends TestCase
 		MSA msa = null;
 		try
 		{
-			SequenceContainer seqs = DefaultSequenceContainer.readFromFile(new FastaReader(PairwiseAlignment.class.getResource("/resources/test.fa").getFile().toString()));
+			SequenceContainer seqs = new FastaReader().read(PairwiseAlignment.class.getResourceAsStream("/resources/test.fa"));
 			msa = MSA.createMuscleMSA(seqs);
 		} 
 		catch (Exception e)
@@ -50,7 +50,7 @@ public class HMMTest extends TestCase
 		MSA ali = null;
 		try
 		{	
-			SequenceContainer seqs = DefaultSequenceContainer.readFromFile(new FastaReader(PairwiseAlignment.class.getResource("/resources/test2.fa").getFile().toString()));
+			SequenceContainer seqs = new FastaReader().read(PairwiseAlignment.class.getResourceAsStream("/resources/test2.fa"));
 			ali = hmm.align(seqs);
 		} 
 		catch (Exception e)

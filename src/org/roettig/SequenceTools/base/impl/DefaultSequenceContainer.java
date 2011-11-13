@@ -4,11 +4,14 @@ import org.roettig.SequenceTools.base.Annotated;
 import org.roettig.SequenceTools.base.Sequence;
 import org.roettig.SequenceTools.base.SequenceContainer;
 import org.roettig.SequenceTools.exception.FileParseErrorException;
+import org.roettig.SequenceTools.format.FastaReader;
+import org.roettig.SequenceTools.format.SeqXMLReader;
 import org.roettig.SequenceTools.format.SequenceReader;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
 
@@ -75,25 +78,37 @@ public class DefaultSequenceContainer implements SequenceContainer, Serializable
 	/**
 	 * Creation method that reads sequences from Fasta file.
 	 * 
-	 * @param filename
-	 * @return SequenceSet
+	 * @param fasta filename
+	 * @return SequenceContainer
 	 * @throws FileNotFoundException 
 	 */
-	public static SequenceContainer readFromFile(SequenceReader reader)
+	public static SequenceContainer readFromFastaFile(String filename)
 	{
-		return reader.read();
+		return new FastaReader().read(filename);
 	}
-
+	
 	/**
 	 * Creation method that reads sequences from Fasta file.
 	 * 
-	 * @param br
-	 * @return SequenceSet
+	 * @param fasta filename
+	 * @return SequenceContainer
 	 * @throws FileNotFoundException 
 	 */
-	public static DefaultSequenceContainer readFromReader(BufferedReader br) throws FileParseErrorException
+	public static SequenceContainer readFromFastaStream(InputStream in)
 	{
-		return null;
+		return new FastaReader().read(in);
+	}
+	
+	/**
+	 * Creation method that reads sequences from SeqXML file.
+	 * 
+	 * @param seqxml filename
+	 * @return SequenceContainer
+	 * @throws FileNotFoundException 
+	 */
+	public static SequenceContainer readFromSeqXMLFile(String filename)
+	{
+		return new SeqXMLReader().read(filename);
 	}
 
 	/**

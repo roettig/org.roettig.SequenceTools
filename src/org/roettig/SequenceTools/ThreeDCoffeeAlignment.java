@@ -20,6 +20,7 @@ import org.roettig.SequenceTools.base.Sequence;
 import org.roettig.SequenceTools.base.SequenceContainer;
 import org.roettig.SequenceTools.base.impl.DefaultSequence;
 import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
+import org.roettig.SequenceTools.format.FastaWriter;
 import org.roettig.SequenceTools.helper.ClientHttpRequest;
 
 /**
@@ -31,7 +32,7 @@ public class ThreeDCoffeeAlignment
 	public static Logger logger = Logger.getLogger("org.roettig.SequenceTools.ThreeDCoffeeAlignment");
 
 	private String PID;
-	private DefaultSequenceContainer seqs = new DefaultSequenceContainer();
+	private SequenceContainer seqs = new DefaultSequenceContainer();
 	private Map<String,String> masked_name_2_orig_name = new HashMap<String,String>();
 
 	private static String CGIURL2    = "http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi";
@@ -209,7 +210,9 @@ public class ThreeDCoffeeAlignment
 		{
 			e.printStackTrace();
 		}
-		seqs.store(tmpIn.getAbsoluteFile().toString());
+		// FIXME
+		new FastaWriter().write(seqs, tmpIn.getAbsolutePath());
+		//seqs.store(tmpIn.getAbsoluteFile().toString(), );
 
 	}
 
@@ -246,8 +249,8 @@ public class ThreeDCoffeeAlignment
 		if(ready)
 		{
 			URL url = new URL(RESULTURL+jobid+".fasta_aln");
-			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-			resultseqs  = DefaultSequenceContainer.readFromReader(in);
+			
+			resultseqs  = DefaultSequenceContainer.readFromFastaStream(url.openStream());
 			//resultseqs.store("/tmp/result.afa");
 			//msa = new MSA(rseqs);
 		}
@@ -266,7 +269,7 @@ public class ThreeDCoffeeAlignment
 	}
 
 	private MSA msa;
-	private DefaultSequenceContainer msaseqs;
-	private DefaultSequenceContainer resultseqs;
+	private SequenceContainer msaseqs;
+	private SequenceContainer resultseqs;
 	private String joburl = "";
 }

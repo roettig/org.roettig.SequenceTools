@@ -38,7 +38,7 @@ public class SequenceSetTest extends TestCase
 	@Before
 	public void setUp() throws Exception
 	{
-		seqs = DefaultSequenceContainer.readFromFile(new FastaReader(PairwiseAlignment.class.getResource("/resources/test.fa").getFile().toString()));
+		seqs = new FastaReader().read(PairwiseAlignment.class.getResourceAsStream("/resources/test.fa"));
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class SequenceSetTest extends TestCase
 	{
 		SequenceContainer seqs1 = null;
 		
-		seqs1 = DefaultSequenceContainer.readFromFile(new FastaReader(PairwiseAlignment.class.getResource("/resources/test.afa").getFile().toString()));
+		seqs1 = new FastaReader().read(PairwiseAlignment.class.getResourceAsStream("/resources/test.afa"));
 		
 		assertEquals(seqs1.size(),1);
 		// we can also read Fasta file with gap symbols

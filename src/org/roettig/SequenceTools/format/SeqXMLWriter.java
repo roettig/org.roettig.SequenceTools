@@ -19,15 +19,10 @@ public class SeqXMLWriter implements SequenceWriter
 {
 	protected Document document;
 	protected Element  root;
-	protected File     outputfile;
-	
-	public SeqXMLWriter(String filename)
-	{
-		outputfile = new File(filename);
-	}
-	
+
+		
 	@Override
-	public void write(SequenceContainer seqs)
+	public void write(SequenceContainer seqs, String filename)
 	{
 		document = DocumentHelper.createDocument();
 		root     = document.addElement( "seqxml" );
@@ -54,7 +49,7 @@ public class SeqXMLWriter implements SequenceWriter
 		
 		try
 		{
-			writer = new XMLWriter( new FileWriter( outputfile ), format );
+			writer = new XMLWriter( new FileWriter( filename ), format );
 			writer.write( document );
 			writer.close();
 		} 
@@ -64,21 +59,4 @@ public class SeqXMLWriter implements SequenceWriter
 		}
 		
 	}
-	
-	public static void main(String[] args) throws FileNotFoundException
-	{
-		
-		SequenceContainer seqs   = new FastaReader("/tmp/in.fa").read();
-		((Annotated) seqs).addProperty("owner", "roettig");
-		SeqXMLWriter    writer = new SeqXMLWriter("/tmp/seq.xml");
-		int idx = 0;
-		
-		for(Sequence seq: seqs)
-		{
-			((DefaultSequence) seq).addProperty("test", String.format("%d",idx++));
-		}
-		
-		writer.write(seqs);
-	}
-
 }

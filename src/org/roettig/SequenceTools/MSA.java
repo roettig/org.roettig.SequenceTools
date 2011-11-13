@@ -15,6 +15,10 @@ import org.roettig.SequenceTools.binres.muscle.MuscleDeployer;
 import org.roettig.SequenceTools.exception.FileParseErrorException;
 import org.roettig.SequenceTools.format.FastaReader;
 import org.roettig.SequenceTools.format.FastaWriter;
+import org.roettig.SequenceTools.format.SeqXMLReader;
+import org.roettig.SequenceTools.format.SeqXMLWriter;
+import org.roettig.SequenceTools.format.SequenceReader;
+import org.roettig.SequenceTools.format.SequenceWriter;
 
 
 /**
@@ -24,7 +28,7 @@ import org.roettig.SequenceTools.format.FastaWriter;
  */
 public class MSA implements Iterable<Sequence>, Serializable
 {
-	protected DefaultSequenceContainer seqs = null;
+	protected SequenceContainer seqs = null;
 	protected HashMap<Integer,Integer> quality = null;
 	
 	private static String MUSCLEPATH;
@@ -39,7 +43,7 @@ public class MSA implements Iterable<Sequence>, Serializable
 		quality = new HashMap<Integer,Integer>();
 	}
 
-	public MSA(DefaultSequenceContainer _seqs)
+	public MSA(SequenceContainer _seqs)
 	{
 		seqs    = new DefaultSequenceContainer(_seqs);
 		quality = new HashMap<Integer,Integer>();
@@ -55,7 +59,7 @@ public class MSA implements Iterable<Sequence>, Serializable
 	public static MSA createMuscleMSA(SequenceContainer seqs) throws Exception
 	{
 		MSA ret     = new MSA();
-
+		
 		File tmpIn  = null;
 		File tmpOut = null;
 		try
@@ -69,7 +73,7 @@ public class MSA implements Iterable<Sequence>, Serializable
 			throw new RuntimeException(e);
 		}
 
-		FastaWriter.write(seqs,tmpIn.getAbsolutePath());
+		new FastaWriter().write(seqs,tmpIn.getAbsolutePath());
 
 		try
 		{
@@ -99,16 +103,15 @@ public class MSA implements Iterable<Sequence>, Serializable
 			throw new RuntimeException(e);
 		}
 
-		SequenceContainer msaseqs = null;
-		msaseqs = DefaultSequenceContainer.readFromFile(new FastaReader(tmpOut.toString()));
+		
+		ret.seqs = new FastaReader().read(tmpOut.toString());
 
-		for(Sequence s: msaseqs)
-		{
-			ret.add( s );
-		}
+		((Annotated) ret.seqs).addProperty("aligned", true);
+		
+		
 
-		//tmpIn.delete();
-		//tmpOut.delete();
+		tmpIn.delete();
+		tmpOut.delete();
 		
 		return ret;
 	}
@@ -120,14 +123,23 @@ public class MSA implements Iterable<Sequence>, Serializable
 	 */
 	public void store(String filename)
 	{
-		//seqs.store(filename);
-		FastaWriter.write(seqs, filename);
+		new SeqXMLWriter().write(seqs,filename);
+	}
+	
+	/**
+	 * Store MSA to file.
+	 * 
+	 * @param filename
+	 */
+	public void store(String filename, SequenceWriter writer)
+	{
+		writer.write(seqs, filename);
 	}
 
 	public static MSA loadFromFile(String filename) throws FileNotFoundException, FileParseErrorException
 	{
 		MSA ret = new MSA();
-		ret.load(filename);
+		ret.load(filename, new SeqXMLReader());
 		return ret;
 	}
 
@@ -136,10 +148,26 @@ public class MSA implements Iterable<Sequence>, Serializable
 	 * 
 	 * @param filename
 	 */
+	public void load(String filename, SequenceReader reader)
+	{
+		SequenceContainer seqsIn = null;	
+		seqsIn = reader.read(filename);
+		seqs.clear();
+		for(Sequence s: seqsIn)
+		{
+			add( s );
+		}
+	}
+	
+	/**
+	 * Load MSA from file.
+	 * 
+	 * @param filename
+	 */
 	public void load(String filename)
 	{
 		SequenceContainer seqsIn = null;	
-		seqsIn = DefaultSequenceContainer.readFromFile(new FastaReader(filename));
+		seqsIn = new SeqXMLReader().read(filename);
 		seqs.clear();
 		for(Sequence s: seqsIn)
 		{

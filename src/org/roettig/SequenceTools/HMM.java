@@ -3,19 +3,15 @@ package org.roettig.SequenceTools;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
-import java.util.Properties;
 
 import org.roettig.SequenceTools.base.SequenceContainer;
 import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
 import org.roettig.SequenceTools.binres.hmmer.HmmerDeployer;
-import org.roettig.SequenceTools.exception.FileParseErrorException;
+import org.roettig.SequenceTools.format.FastaReader;
 import org.roettig.SequenceTools.format.FastaWriter;
 
 /**
@@ -77,7 +73,7 @@ public class HMM implements Serializable
 		}
 
 		// store MSA in filesystem 
-		msa.store(tmpIn.getAbsoluteFile().toString());
+		msa.store(tmpIn.getAbsoluteFile().toString(), new FastaWriter());
 
 		try
 		{
@@ -168,7 +164,7 @@ public class HMM implements Serializable
 			throw new RuntimeException(e);
 		}        
 
-		FastaWriter.write(seqs, tmpIn.getAbsolutePath());
+		new FastaWriter().write(seqs, tmpIn.getAbsolutePath());
 		saveToFile(hmmFile.toString());
 
 		try
@@ -189,7 +185,7 @@ public class HMM implements Serializable
 		} 
 
 
-		ret.load(tmpOut.toString());
+		ret.load(tmpOut.toString(), new FastaReader());
  
 
 		// delete temporary files

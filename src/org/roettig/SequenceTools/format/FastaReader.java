@@ -14,45 +14,45 @@ import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
 
 public class FastaReader implements SequenceReader
 {
-	private InputStream in;
+	private static final int ID        = 0;
+	private static final int SEQ       = 1;
+	private static final int WHITELINE = 2;
 	
-	public FastaReader(String filename)
+	@Override
+	public SequenceContainer read(String filename)
 	{
+		SequenceContainer ret = null;
 		try
 		{
-			in = new FileInputStream(filename);
+			ret = read(new FileInputStream(filename));
 		} 
 		catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+		return ret;
 	}
 	
-	public FastaReader(InputStream in)
-	{
-		this.in = in;
-	}
-	
-	private static final int ID        = 0;
-	private static final int SEQ       = 1;
-	private static final int WHITELINE = 2;
-	
-	@Override
-	public SequenceContainer read()
+	public SequenceContainer read(InputStream in)
 	{
 		SequenceContainer seqs = new DefaultSequenceContainer();
-		BufferedReader br   = new BufferedReader(new InputStreamReader(in));
+		BufferedReader    br   = new BufferedReader(new InputStreamReader(in));
+		
 		try
 		{
-			int state = 0;
+			int state = -1;
 			String line = "";
 			String IDS="";
 			StringBuffer SEQS = null;
 			while( (line=br.readLine())!=null)
 			{
 				if(line.startsWith(">"))
+				{
+					if(state==ID)
+						throw new RuntimeException("corrupt FASTA file supplied");
 					state = ID;
+				}
 				else
 					if(!line.startsWith(" "))
 					{
@@ -68,7 +68,11 @@ public class FastaReader implements SequenceReader
 					case(ID):
 						if(SEQS!=null)
 						{
-							seqs.add(DefaultSequence.create(IDS.trim(),SEQS.toString()));
+							IDS = IDS.trim();
+							String seq = SEQS.toString();
+							if(!checkSeq(seq))
+								throw new RuntimeException("invalid sequence found with id "+IDS);
+							seqs.add(DefaultSequence.create(IDS,seq));
 						}
 						IDS  = line.substring(1);
 						SEQS = new StringBuffer();
@@ -78,7 +82,10 @@ public class FastaReader implements SequenceReader
 						break;
 				}
 			}
-			seqs.add( DefaultSequence.create(IDS.trim(),SEQS.toString()));
+			String seq = SEQS.toString();
+			if(!checkSeq(seq))
+				throw new RuntimeException("invalid sequence found with id "+IDS);
+			seqs.add(DefaultSequence.create(IDS,seq));
 		} 
 		catch (IOException e)
 		{
@@ -87,15 +94,29 @@ public class FastaReader implements SequenceReader
 		return seqs;
 	}
 
+	private boolean checkSeq(String seq)
+	{
+		return seq.matches("^[ACDEFGHIKLMNPQRSTVWXYacdefghiklmnpqrstvwxy-]+$");
+	}
+
 	public static void main(String[] args) throws FileNotFoundException
 	{
-		SequenceReader    r    = new FastaReader("/tmp/in.fa");
-		SequenceContainer seqs = r.read();
+		SequenceReader    r    = new FastaReader();
+		SequenceContainer seqs = null;
+		try
+		{
+			 seqs = r.read("/tmp/in.fa");	
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
+		
 		for(Sequence seq: seqs)
 		{
 			System.out.println(seq.toString());
 		}
-
+		System.out.println("L KWPE-tER".matches("^[ACDEFGHIKLMNPQRSTVWXYacdefghiklmnpqrstvwxy-]+$"));
 	}
 
 }
