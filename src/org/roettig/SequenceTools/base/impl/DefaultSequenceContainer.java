@@ -5,7 +5,9 @@ import org.roettig.SequenceTools.base.Sequence;
 import org.roettig.SequenceTools.base.SequenceContainer;
 import org.roettig.SequenceTools.exception.FileParseErrorException;
 import org.roettig.SequenceTools.format.FastaReader;
+import org.roettig.SequenceTools.format.FastaWriter;
 import org.roettig.SequenceTools.format.SeqXMLReader;
+import org.roettig.SequenceTools.format.SeqXMLWriter;
 import org.roettig.SequenceTools.format.SequenceReader;
 
 import java.io.BufferedReader;
@@ -76,11 +78,38 @@ public class DefaultSequenceContainer implements SequenceContainer, Serializable
 	}
 
 	/**
+	 * Creation method that reads sequences from a sequence file.
+	 * 
+	 * @param sequence filename
+	 * @return SequenceContainer
+	 *  
+	 */
+	public static SequenceContainer readFromFile(String filename)
+	{
+		if(filename.toLowerCase().endsWith(".seqxml"))
+			return readFromSeqXMLFile(filename);
+		else if(filename.toLowerCase().endsWith(".fasta"))
+				return readFromFastaFile(filename);
+			else // best guess
+				return readFromFastaFile(filename);
+	}
+	
+	public static void writeToFile(String filename, SequenceContainer seqs)
+	{
+		if(filename.toLowerCase().endsWith(".seqxml"))
+			new SeqXMLWriter().write(seqs,filename);
+		else if(filename.toLowerCase().endsWith(".fasta"))
+				new FastaWriter().write(seqs,filename);
+			else // best guess
+				new FastaWriter().write(seqs,filename);
+	}
+	
+	/**
 	 * Creation method that reads sequences from Fasta file.
 	 * 
 	 * @param fasta filename
 	 * @return SequenceContainer
-	 * @throws FileNotFoundException 
+	 *  
 	 */
 	public static SequenceContainer readFromFastaFile(String filename)
 	{
@@ -92,7 +121,7 @@ public class DefaultSequenceContainer implements SequenceContainer, Serializable
 	 * 
 	 * @param fasta filename
 	 * @return SequenceContainer
-	 * @throws FileNotFoundException 
+	 *  
 	 */
 	public static SequenceContainer readFromFastaStream(InputStream in)
 	{
@@ -104,7 +133,7 @@ public class DefaultSequenceContainer implements SequenceContainer, Serializable
 	 * 
 	 * @param seqxml filename
 	 * @return SequenceContainer
-	 * @throws FileNotFoundException 
+	 *  
 	 */
 	public static SequenceContainer readFromSeqXMLFile(String filename)
 	{
