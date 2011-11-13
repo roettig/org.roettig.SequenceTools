@@ -7,9 +7,10 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import org.biojava.bio.seq.ProteinTools;
-import org.biojava.bio.seq.Sequence;
-import org.biojava.bio.symbol.IllegalSymbolException;
+
+import org.roettig.SequenceTools.base.Sequence;
+import org.roettig.SequenceTools.base.impl.DefaultSequence;
+import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
 import org.roettig.SequenceTools.exception.FileParseErrorException;
 
 /**
@@ -90,7 +91,7 @@ public class ASCMSA extends MSA
 	@Override
 	public void store(String filename)
 	{
-		Sequence s = seqs.getById("pdb");
+		Sequence s = seqs.getByID("pdb");
 
 		String idx = "";
 		for(Integer i: ascidx)
@@ -99,15 +100,8 @@ public class ASCMSA extends MSA
 		}
 		idx = idx.substring(0, idx.length());
 
-		Sequence prot = null;
-		try
-		{
-			prot  = ProteinTools.createProteinSequence( s.seqString(),"pdb"+idx);
-		} 
-		catch (IllegalSymbolException e)
-		{
-			e.printStackTrace();
-		}
+		Sequence prot = DefaultSequence.create("pdb"+idx,s.getSequenceString());
+		
 		seqs.remove(s);
 		seqs.add(prot);
 		super.store(filename);
@@ -134,32 +128,24 @@ public class ASCMSA extends MSA
 	 * @param filename 
 	 */
 	@Override
-	public void load(String filename) throws FileNotFoundException, FileParseErrorException
+	public void load(String filename)
 	{
 		super.load(filename);
 
 		for(Sequence s: seqs)
 		{
-			if(s.getName().startsWith("pdb"))
+			if(s.getID().startsWith("pdb"))
 			{
-				String sid = s.getName();
+				String sid = s.getID();
 
 				String toks[] = sid.split("_");
 				for(int i=1;i<toks.length;i++)
 				{
-					//System.out.println(Integer.parseInt(toks[i]));
 					ascidx.add( Integer.parseInt(toks[i]) );
 				}
 
-				Sequence prot = null;
-				try
-				{
-					prot  = ProteinTools.createProteinSequence( s.seqString(),"pdb");
-				} 
-				catch (IllegalSymbolException e)
-				{
-					e.printStackTrace();
-				}
+				Sequence prot = DefaultSequence.create("pdb", s.getSequenceString());
+				
 				seqs.remove(s);
 				seqs.add(prot);
 				break;
@@ -174,7 +160,7 @@ public class ASCMSA extends MSA
 	 * @param sid sequence ID of reference sequence
 	 * @return SequenceSet
 	 */
-	public SequenceSet getSignatures(String sid)
+	public DefaultSequenceContainer getSignatures(String sid)
 	{
 		return this.getSubSequences(ascidx,sid); 
 	}
@@ -184,7 +170,7 @@ public class ASCMSA extends MSA
 	 * 
 	 * @return SequenceSet
 	 */
-	public SequenceSet getSignatures() throws Exception
+	public DefaultSequenceContainer getSignatures() throws Exception
 	{
 		return this.getSubSequences(ascidx,"pdb"); 
 	}

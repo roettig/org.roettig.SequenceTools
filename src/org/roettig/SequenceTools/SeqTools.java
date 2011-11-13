@@ -12,7 +12,7 @@ import org.biojava.bio.SimpleAnnotation;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.seq.db.SequenceDB;
 import org.biojava.bio.seq.impl.SimpleSequenceFactory;
-import org.biojava.bio.seq.io.SeqIOTools;
+
 import org.biojava.bio.seq.io.SymbolTokenization;
 import org.biojava.bio.symbol.Alphabet;
 import org.biojava.bio.symbol.AlphabetManager;
@@ -20,7 +20,10 @@ import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SimpleSymbolList;
 import org.biojava.bio.symbol.SymbolList;
+import org.roettig.SequenceTools.base.SequenceContainer;
+import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
 import org.roettig.SequenceTools.exception.FileParseErrorException;
+import org.roettig.SequenceTools.format.FastaReader;
 
 /**
  * SeqTools collects several static helper functions in the context
@@ -272,30 +275,27 @@ public class SeqTools
 
 	public static boolean checkFastaFile(String filename)
 	{
-		SequenceSet seqs = null;
+		/*
+		SequenceContainer seqs = null;
 		try
 		{
-			seqs = SequenceSet.readFromFile(filename);
+			seqs = DefaultSequenceContainer.readFromFile( new FastaReader(filename));
 		} 
-		catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-			return false;
-		} 
-		catch (FileParseErrorException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 			return false;
 		}
+		*/
 		return true;
 	}
 
 	public static boolean checkFastaString(String s)
 	{
-		SequenceSet seqs = null;
+		DefaultSequenceContainer seqs = null;
 		try
 		{
-			seqs = SequenceSet.readFromReader(new BufferedReader(new StringReader(s)));
+			seqs = DefaultSequenceContainer.readFromReader(new BufferedReader(new StringReader(s)));
 		} 
 		catch (FileParseErrorException e)
 		{

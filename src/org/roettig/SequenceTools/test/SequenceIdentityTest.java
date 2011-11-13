@@ -9,11 +9,11 @@ import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.utils.ChangeVetoException;
 import org.junit.Test;
-import org.roettig.SequenceTools.AlignedSequenceIdentity;
-import org.roettig.SequenceTools.GlobalSequenceIdentity;
 import org.roettig.SequenceTools.PairwiseAlignment;
 import org.roettig.SequenceTools.SeqTools;
-import org.roettig.SequenceTools.SequenceIdentity;
+import org.roettig.SequenceTools.base.SequenceIdentity;
+import org.roettig.SequenceTools.base.impl.AlignedSequenceIdentity;
+import org.roettig.SequenceTools.base.impl.GlobalSequenceIdentity;
 
 
 /**

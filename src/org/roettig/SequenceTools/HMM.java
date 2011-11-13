@@ -8,9 +8,15 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Properties;
+
+import org.roettig.SequenceTools.base.SequenceContainer;
+import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
+import org.roettig.SequenceTools.binres.hmmer.HmmerDeployer;
 import org.roettig.SequenceTools.exception.FileParseErrorException;
+import org.roettig.SequenceTools.format.FastaWriter;
 
 /**
  * The HMM class is used to build and operate on Hidden Markov Models.
@@ -19,39 +25,38 @@ import org.roettig.SequenceTools.exception.FileParseErrorException;
  *
  */
 
-public class HMM
+public class HMM implements Serializable
 {
 	private String hmmstring = null;
-	private String HMMERPATH = null;
-
+	
+	private static String HMMALIGNPATH;
+	private static String HMMBUILDPATH;
+	
+	static
+	{
+		HMMBUILDPATH = HmmerDeployer.deployHMMBUILD();
+		HMMALIGNPATH = HmmerDeployer.deployHMMALIGN();
+	}
 
 	public HMM(MSA msa) throws Exception
 	{
-		String path = System.getProperty("hmmerpath");
-		if(path!=null)
-			HMMERPATH = path;
-		else
-			HMMERPATH = "/usr/bin";
-
 		createHMM(msa);
 	}
 
 	public HMM(MSA msa, String _hmmerpath) throws Exception
 	{
-		HMMERPATH = _hmmerpath;
 		createHMM(msa);
 	}
 
 
-	public HMM(SequenceSet seqs) throws Exception
+	public HMM(DefaultSequenceContainer seqs) throws Exception
 	{
 		MSA msa = MSA.createMuscleMSA(seqs);
 		createHMM(msa);           
 	}
 
-	public HMM(SequenceSet seqs, String _hmmerpath) throws Exception
+	public HMM(DefaultSequenceContainer seqs, String _hmmerpath) throws Exception
 	{
-		HMMERPATH = _hmmerpath;
 		MSA msa = MSA.createMuscleMSA(seqs);
 		createHMM(msa);           
 	}
@@ -68,15 +73,15 @@ public class HMM
 		catch(IOException e)
 		{
 			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 
 		// store MSA in filesystem 
 		msa.store(tmpIn.getAbsoluteFile().toString());
 
-
 		try
 		{
-			ProcessBuilder builder = new ProcessBuilder( "/bin/bash", "-c", HMMERPATH+"/hmmbuild -g -F "+tmpOut.toString()+" "+tmpIn.toString()); 
+			ProcessBuilder builder = new ProcessBuilder(HMMBUILDPATH,"-g","-F", tmpOut.toString(),tmpIn.toString()); 
 			Process p = builder.start();   
 			p.waitFor();
 			loadFromFile(tmpOut.toString());
@@ -84,18 +89,22 @@ public class HMM
 		catch(InterruptedException e)
 		{
 			e.printStackTrace();
-			throw(e);
+			throw new RuntimeException(e);
 		} 
 		catch (IOException e)
 		{
 			e.printStackTrace();
-			throw(e);
+			throw new RuntimeException(e);
 		}
+		
+		
 		tmpOut.delete();
 		tmpIn.delete();
 
 	}
 
+	private static String NEWLINE = System.getProperty("line.separator");
+	
 	/**
 	 * Load HMM from file.
 	 * 
@@ -107,13 +116,15 @@ public class HMM
 		try 
 		{
 			BufferedReader in = new BufferedReader(new FileReader(filename));
-			hmmstring = "";
+			StringBuffer sb = new StringBuffer();
+			
 			String str = null;
 			while ((str = in.readLine()) != null) 
 			{
-				hmmstring += str+"\n";
+				sb.append(str+NEWLINE);
 			}
 			in.close();
+			hmmstring = sb.toString();
 		} 
 		catch (IOException e) 
 		{
@@ -138,7 +149,7 @@ public class HMM
 		os.close();
 	}
 
-	public MSA align(SequenceSet seqs) throws Exception
+	public MSA align(SequenceContainer seqs) throws Exception
 	{
 		MSA ret = new MSA();
 
@@ -154,56 +165,38 @@ public class HMM
 		catch(IOException e)
 		{
 			e.printStackTrace();
+			throw new RuntimeException(e);
 		}        
 
-		seqs.store(tmpIn.toString());
+		FastaWriter.write(seqs, tmpIn.getAbsolutePath());
 		saveToFile(hmmFile.toString());
-		try
-		{
-			Thread.sleep(30);
-		} 
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
-
-		//System.out.println(HMMERPATH+"/hmmalign --outformat A2M -o "+tmpOut.toString()+" "+hmmFile.toString()+" "+tmpIn.toString());
 
 		try
 		{
-			ProcessBuilder builder = new ProcessBuilder( "/bin/bash", "-c", HMMERPATH+"/hmmalign --outformat A2M -o "+tmpOut.toString()+" "+hmmFile.toString()+" "+tmpIn.toString()); 
+			ProcessBuilder builder = new ProcessBuilder( HMMALIGNPATH,"--outformat", "A2M", "-o",tmpOut.toString(),hmmFile.toString(),tmpIn.toString()); 
 			Process p = builder.start();   
 			p.waitFor();			
 		}
 		catch(InterruptedException e)
 		{
 			e.printStackTrace();
+			throw new RuntimeException(e);
 		} 
 		catch (IOException e1)
 		{
 			e1.printStackTrace();
+			throw new RuntimeException(e1);
 		} 
 
 
-		try
-		{
-			ret.load(tmpOut.toString());
-		} 
-		catch (FileNotFoundException e)
-		{	
-			e.printStackTrace();
-			throw(e);
-		} 
-		catch (FileParseErrorException e)
-		{
-			e.printStackTrace();
-			throw(e);
-		}
+		ret.load(tmpOut.toString());
+ 
 
 		// delete temporary files
 		hmmFile.delete();
 		tmpIn.delete();
 		tmpOut.delete();
+		
 		return ret;
 	}
 }

@@ -1,15 +1,20 @@
 package org.roettig.SequenceTools;
 
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.io.*;
-import java.net.URL;
 import java.util.*;
-import org.biojava.bio.Annotation;
-import org.biojava.bio.seq.Sequence;
+
+import org.roettig.SequenceTools.base.Annotated;
+import org.roettig.SequenceTools.base.Sequence;
+import org.roettig.SequenceTools.base.SequenceContainer;
+import org.roettig.SequenceTools.base.impl.DefaultSequence;
+import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
+import org.roettig.SequenceTools.binres.muscle.MuscleDeployer;
 import org.roettig.SequenceTools.exception.FileParseErrorException;
+import org.roettig.SequenceTools.format.FastaReader;
+import org.roettig.SequenceTools.format.FastaWriter;
 
 
 /**
@@ -19,30 +24,25 @@ import org.roettig.SequenceTools.exception.FileParseErrorException;
  */
 public class MSA implements Iterable<Sequence>, Serializable
 {
-	protected SequenceSet seqs = null;
+	protected DefaultSequenceContainer seqs = null;
 	protected HashMap<Integer,Integer> quality = null;
-	private static String MUSCLEPATH = null;
-
+	
+	private static String MUSCLEPATH;
+	static
+	{
+		MUSCLEPATH = MuscleDeployer.deployMUSCLE();
+	}
+	
 	public MSA()
 	{
-		seqs    = new SequenceSet();
+		seqs    = new DefaultSequenceContainer();
 		quality = new HashMap<Integer,Integer>();
 	}
 
-	public MSA(SequenceSet _seqs)
+	public MSA(DefaultSequenceContainer _seqs)
 	{
-		seqs    = new SequenceSet(_seqs);
+		seqs    = new DefaultSequenceContainer(_seqs);
 		quality = new HashMap<Integer,Integer>();
-	}
-
-	private static void checkMusclePath() throws Exception
-	{	
-		String path = System.getProperty("musclepath");
-		if(path!=null)
-			MUSCLEPATH = path;
-		else
-			MUSCLEPATH = "/usr/bin";
-
 	}
 
 	/**
@@ -52,14 +52,9 @@ public class MSA implements Iterable<Sequence>, Serializable
 	 * @return MSA
 	 * @throws Exception
 	 */
-	public static MSA createMuscleMSA(SequenceSet seqs) throws Exception
+	public static MSA createMuscleMSA(SequenceContainer seqs) throws Exception
 	{
 		MSA ret     = new MSA();
-
-		if(MUSCLEPATH==null)
-		{
-			checkMusclePath();            
-		}
 
 		File tmpIn  = null;
 		File tmpOut = null;
@@ -71,47 +66,50 @@ public class MSA implements Iterable<Sequence>, Serializable
 		catch(IOException e)
 		{
 			e.printStackTrace();
-			return ret;
+			throw new RuntimeException(e);
 		}
 
-		seqs.store(tmpIn.getAbsoluteFile().toString());
-
+		FastaWriter.write(seqs,tmpIn.getAbsolutePath());
 
 		try
 		{
-			ProcessBuilder builder = new ProcessBuilder( "/bin/bash", "-c", MUSCLEPATH+"/muscle -in "+tmpIn.getAbsoluteFile().toString()+" -out "+tmpOut.getAbsoluteFile().toString()); 
+			ProcessBuilder builder = new ProcessBuilder( MUSCLEPATH, "-in",tmpIn.getAbsoluteFile().toString(),"-out",tmpOut.getAbsoluteFile().toString());
 			Process p = builder.start();   
 			p.waitFor();
 
-			/*
-          BufferedReader reader = new BufferedReader( new InputStreamReader(p.getErrorStream()) );
-          String s;
-          while( null != (s = reader.readLine()) ) 
-          {
-              System.out.println(s);
-          }
-          reader.close();
-			 */
+			
+			BufferedReader reader = new BufferedReader( new InputStreamReader(p.getErrorStream()) );
+			StringBuffer log = new StringBuffer();
+			String s;
+			while( null != (s = reader.readLine()) ) 
+			{
+				log.append(s);
+			}
+			reader.close();
+			
 		}
 		catch(InterruptedException e)
 		{
 			e.printStackTrace();
+			throw new RuntimeException(e);
 		} 
 		catch (IOException e)
 		{
 			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 
-		SequenceSet msaseqs = null;
-		msaseqs = SequenceSet.readFromFile(tmpOut.toString());
+		SequenceContainer msaseqs = null;
+		msaseqs = DefaultSequenceContainer.readFromFile(new FastaReader(tmpOut.toString()));
 
 		for(Sequence s: msaseqs)
 		{
 			ret.add( s );
 		}
 
-		tmpIn.delete();
-		tmpOut.delete();
+		//tmpIn.delete();
+		//tmpOut.delete();
+		
 		return ret;
 	}
 
@@ -122,7 +120,8 @@ public class MSA implements Iterable<Sequence>, Serializable
 	 */
 	public void store(String filename)
 	{
-		seqs.store(filename);
+		//seqs.store(filename);
+		FastaWriter.write(seqs, filename);
 	}
 
 	public static MSA loadFromFile(String filename) throws FileNotFoundException, FileParseErrorException
@@ -137,23 +136,10 @@ public class MSA implements Iterable<Sequence>, Serializable
 	 * 
 	 * @param filename
 	 */
-	public void load(String filename) throws FileNotFoundException, FileParseErrorException
+	public void load(String filename)
 	{
-
-		SequenceSet seqsIn = null;
-		try
-		{
-			seqsIn = SequenceSet.readFromFile(filename);
-		} 
-		catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		} 
-		catch (FileParseErrorException e)
-		{
-			e.printStackTrace();
-		}
-
+		SequenceContainer seqsIn = null;	
+		seqsIn = DefaultSequenceContainer.readFromFile(new FastaReader(filename));
 		seqs.clear();
 		for(Sequence s: seqsIn)
 		{
@@ -161,7 +147,7 @@ public class MSA implements Iterable<Sequence>, Serializable
 		}
 	}
 
-	public static MSA align(MSA msa, SequenceSet seqs)
+	public static MSA align(MSA msa, DefaultSequenceContainer seqs)
 	{
 		HMM hmm = null;
 		try
@@ -193,7 +179,7 @@ public class MSA implements Iterable<Sequence>, Serializable
 	 */
 	public Sequence getById(String id)
 	{
-		return seqs.getById(id);
+		return seqs.getByID(id);
 	}
 
 	/**
@@ -233,9 +219,9 @@ public class MSA implements Iterable<Sequence>, Serializable
 	 * @param frac  fraction of gaps allowed in a column to be kept 
 	 * @return SequenceSet
 	 */
-	public SequenceSet getAlignedSubSequences(double frac)
+	public DefaultSequenceContainer getAlignedSubSequences(double frac)
 	{
-		SequenceSet ret   = new SequenceSet();
+		DefaultSequenceContainer ret   = new DefaultSequenceContainer();
 		Set<Integer> keep = new HashSet<Integer>();
 		for(int c=0;c<width();c++)
 		{
@@ -259,9 +245,8 @@ public class MSA implements Iterable<Sequence>, Serializable
 
 		for(Sequence s: this)
 		{
-			Sequence subseq = getSubSequence(s.getName(), keep);
-			Annotation seqAn = subseq.getAnnotation();
-			seqAn.setProperty("parent", s);
+			Sequence subseq = getSubSequence(s.getID(), keep);
+			((Annotated) subseq).addProperty("parent",s.getID());
 			ret.add( subseq );
 		}
 
@@ -276,7 +261,7 @@ public class MSA implements Iterable<Sequence>, Serializable
 	 * @return SequenceSet
 	 * 
 	 */
-	public SequenceSet getSubSequences( Set<Integer> cols, String refsid)
+	public DefaultSequenceContainer getSubSequences( Set<Integer> cols, String refsid)
 	{
 		TreeMap<Integer,Integer> nidxs = new TreeMap<Integer,Integer>();
 		for(Integer c: cols)
@@ -284,12 +269,11 @@ public class MSA implements Iterable<Sequence>, Serializable
 			int idxN = mapSequenceIndexToColumnIndex(refsid,c);
 			nidxs.put(idxN, 1);
 		}
-		SequenceSet ret = new SequenceSet();
+		DefaultSequenceContainer ret = new DefaultSequenceContainer();
 		for(Sequence s: this)
 		{
-			Sequence subseq = getSubSequence(s.getName(), nidxs.keySet());
-			Annotation seqAn = subseq.getAnnotation();
-			seqAn.setProperty("parent", s);
+			Sequence subseq = getSubSequence(s.getID(), nidxs.keySet());
+			((Annotated) subseq).addProperty("parent",s.getID());
 			ret.add( subseq );
 		}
 		return ret;
@@ -305,24 +289,13 @@ public class MSA implements Iterable<Sequence>, Serializable
 	 */
 	public Sequence getSubSequence(String sid, Set<Integer> cols)
 	{
-		String subseq = "";
+		StringBuffer sb = new StringBuffer();
 		for(Integer c: cols)
 		{
-			subseq += getSymbol(sid,  c-1 );
+			sb.append(getSymbol(sid,  c-1 ));
+			//subseq += getSymbol(sid,  c-1 );
 		}
-		Sequence retseq = SeqTools.makeProteinSequence(sid, subseq);
-		/*
-        Sequence retseq = null;
-        try
-        {
-            retseq = SeqTools.makeProteinSequence(sid, subseq);
-            //retseq = ProteinTools.createProteinSequence(subseq, sid);
-        } 
-        catch (IllegalSymbolException e)
-        {
-            e.printStackTrace();
-        } 
-		 */
+		Sequence retseq = DefaultSequence.create(sid, sb.toString());
 		return retseq;
 	}
 
@@ -336,7 +309,7 @@ public class MSA implements Iterable<Sequence>, Serializable
 	public final String getSymbol(int i, int j)
 	{
 		Sequence s = seqs.getByIndex(i);
-		return s.seqString().substring(j, j+1);
+		return s.getSequenceString().substring(j, j+1);
 	}
 
 	/**
@@ -348,8 +321,8 @@ public class MSA implements Iterable<Sequence>, Serializable
 	 */
 	public String getSymbol(String sid, int j)
 	{
-		Sequence s = seqs.getById(sid);
-		return s.seqString().substring(j, j+1);
+		Sequence s = seqs.getByID(sid);
+		return s.getSequenceString().substring(j, j+1);
 	}
 
 	/**
@@ -362,12 +335,12 @@ public class MSA implements Iterable<Sequence>, Serializable
 	 */
 	public int mapColumnIndexToSequenceIndex(String sid, int idx)
 	{
-		Sequence s = seqs.getById(sid);
+		Sequence s = seqs.getByID(sid);
 		int sM=0;
 		for(int i=0;i<idx;i++)
 		{
-			String symb = s.subStr(i+1,i+1);   
-			if(!symb.equals("-"))             
+			char symb = s.getSequenceString().charAt(i+1);   
+			if(symb!='-')             
 				sM++;
 		}
 		return sM;
@@ -382,15 +355,14 @@ public class MSA implements Iterable<Sequence>, Serializable
 	 */
 	public int mapSequenceIndexToColumnIndex(String sid, int idx)
 	{
-		Sequence s = seqs.getById(sid);
+		Sequence s = seqs.getByID(sid);
 		int sM=0;
 		for(int i=0;i<s.length();i++)
 		{
 			if(idx==sM)
 				return i;
-			String symb = s.subStr(i+1,i+1);
-			//System.out.println(symb);
-			if(!symb.equals("-"))
+			char symb = s.getSequenceString().charAt(i+1);
+			if(symb!='-')
 				sM++;
 		}
 		return -1;

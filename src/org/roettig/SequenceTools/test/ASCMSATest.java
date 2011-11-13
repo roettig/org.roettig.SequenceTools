@@ -13,7 +13,8 @@ import org.junit.Test;
 import org.roettig.SequenceTools.ASCMSA;
 import org.roettig.SequenceTools.MSA;
 import org.roettig.SequenceTools.PairwiseAlignment;
-import org.roettig.SequenceTools.SequenceSet;
+import org.roettig.SequenceTools.base.SequenceContainer;
+import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
 import org.roettig.SequenceTools.exception.FileParseErrorException;
 
 /**
@@ -50,7 +51,7 @@ public class ASCMSATest extends TestCase
 		idx.add(9);
 		asc1.setASCIdx(idx);
 
-		SequenceSet sigs = null;
+		SequenceContainer sigs = null;
 		try
 		{
 			sigs  = asc1.getSignatures("pdb");
@@ -60,8 +61,8 @@ public class ASCMSATest extends TestCase
 			e.printStackTrace();
 			fail("could not extract signatures");
 		}
-		assertEquals(sigs.getById("1").seqString(),"LWE");
-		assertEquals(sigs.getById("2").seqString(),"LWE");
+		assertEquals("LWE",sigs.getByID("1").getSequenceString());
+		assertEquals("LWE",sigs.getByID("2").getSequenceString());
 		File tmp = null;
 		try
 		{
@@ -90,9 +91,9 @@ public class ASCMSATest extends TestCase
 			fail("could not load ASCMSA file");
 		}
 
-		SequenceSet sigs2 = asc2.getSignatures("pdb");
-		assertEquals(sigs2.getById("1").seqString(),"LWE");
-		assertEquals(sigs2.getById("2").seqString(),"LWE");
+		DefaultSequenceContainer sigs2 = asc2.getSignatures("pdb");
+		assertEquals(sigs2.getByID("1").getSequenceString(),"LWE");
+		assertEquals(sigs2.getByID("2").getSequenceString(),"LWE");
 
 		tmp.delete();
 	}
@@ -118,9 +119,9 @@ public class ASCMSATest extends TestCase
 			e.printStackTrace();
 			fail("parseError during test");
 		}
-		SequenceSet sigs2 = asc1.getSignatures("pdb");
-		assertEquals(sigs2.getById("1").seqString(),"LWE");
-		assertEquals(sigs2.getById("2").seqString(),"LWE");
+		DefaultSequenceContainer sigs2 = asc1.getSignatures("pdb");
+		assertEquals(sigs2.getByID("1").getSequenceString(),"LWE");
+		assertEquals(sigs2.getByID("2").getSequenceString(),"LWE");
 
 	}    
 }

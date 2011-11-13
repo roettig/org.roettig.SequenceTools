@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +16,10 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.biojava.bio.seq.Sequence;
-import org.roettig.SequenceTools.exception.FileParseErrorException;
+import org.roettig.SequenceTools.base.Sequence;
+import org.roettig.SequenceTools.base.SequenceContainer;
+import org.roettig.SequenceTools.base.impl.DefaultSequence;
+import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
 import org.roettig.SequenceTools.helper.ClientHttpRequest;
 
 /**
@@ -30,7 +31,7 @@ public class ThreeDCoffeeAlignment
 	public static Logger logger = Logger.getLogger("org.roettig.SequenceTools.ThreeDCoffeeAlignment");
 
 	private String PID;
-	private SequenceSet seqs = new SequenceSet();
+	private DefaultSequenceContainer seqs = new DefaultSequenceContainer();
 	private Map<String,String> masked_name_2_orig_name = new HashMap<String,String>();
 
 	private static String CGIURL2    = "http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi";
@@ -73,15 +74,15 @@ public class ThreeDCoffeeAlignment
 
 	}
 
-	public ThreeDCoffeeAlignment(SequenceSet _seqs)
+	public ThreeDCoffeeAlignment(SequenceContainer _seqs)
 	{
 		int idx = 1;
 		for(Sequence s: _seqs)
 		{
 			String sid = String.format("%d",idx);
-			Sequence sclone = SeqTools.makeProteinSequence(sid,s.seqString());
+			Sequence sclone = DefaultSequence.create(sid,s.getSequenceString());
 			seqs.add(sclone);
-			masked_name_2_orig_name.put(sid,s.getName());
+			masked_name_2_orig_name.put(sid,s.getID());
 			idx++;
 		}
 	}
@@ -246,7 +247,7 @@ public class ThreeDCoffeeAlignment
 		{
 			URL url = new URL(RESULTURL+jobid+".fasta_aln");
 			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-			resultseqs  = SequenceSet.readFromReader(in);
+			resultseqs  = DefaultSequenceContainer.readFromReader(in);
 			//resultseqs.store("/tmp/result.afa");
 			//msa = new MSA(rseqs);
 		}
@@ -255,17 +256,17 @@ public class ThreeDCoffeeAlignment
 
 	private void unwrapSequences()
 	{
-		msaseqs = new SequenceSet();
+		msaseqs = new DefaultSequenceContainer();
 		for(Sequence s: resultseqs)
 		{
-			Sequence sclone = SeqTools.makeProteinSequence(masked_name_2_orig_name.get(s.getName()), s.seqString());
+			Sequence sclone = DefaultSequence.create(masked_name_2_orig_name.get(s.getID()), s.getSequenceString());
 			msaseqs.add(sclone);
 		}
 		msa = new MSA(msaseqs);
 	}
 
 	private MSA msa;
-	private SequenceSet msaseqs;
-	private SequenceSet resultseqs;
+	private DefaultSequenceContainer msaseqs;
+	private DefaultSequenceContainer resultseqs;
 	private String joburl = "";
 }

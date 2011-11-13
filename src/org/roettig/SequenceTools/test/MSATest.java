@@ -3,15 +3,16 @@
  */
 package org.roettig.SequenceTools.test;
 
-import static org.junit.Assert.*;
 import junit.framework.TestCase;
 
-import org.biojava.bio.seq.Sequence;
 import org.junit.Before;
 import org.junit.Test;
 import org.roettig.SequenceTools.MSA;
 import org.roettig.SequenceTools.PairwiseAlignment;
-import org.roettig.SequenceTools.SequenceSet;
+import org.roettig.SequenceTools.base.Sequence;
+import org.roettig.SequenceTools.base.SequenceContainer;
+import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
+import org.roettig.SequenceTools.format.FastaReader;
 
 /**
  * @author roettig
@@ -27,7 +28,7 @@ public class MSATest extends TestCase
 	{
 		try
 		{
-			SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test.fa").getFile());
+			SequenceContainer seqs = DefaultSequenceContainer.readFromFile(new FastaReader(PairwiseAlignment.class.getResource("/resources/test.fa").getFile().toString()));
 			msa = MSA.createMuscleMSA(seqs);
 		} 
 		catch (Exception e)
@@ -38,7 +39,7 @@ public class MSATest extends TestCase
 	}
 
 	/**
-	 * Test method for {@link org.roettig.SequenceTools.MSA#createMuscleMSA(org.roettig.SequenceTools.SequenceSet)}.
+	 * Test method for {@link org.roettig.SequenceTools.MSA#createMuscleMSA(org.roettig.SequenceTools.base.impl.DefaultSequenceContainer)}.
 	 */
 	@Test
 	public void testCreateMuscleMSA()
@@ -46,7 +47,7 @@ public class MSATest extends TestCase
 		MSA msa = null;
 		try
 		{
-			SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test.fa").getFile());
+			SequenceContainer seqs = DefaultSequenceContainer.readFromFile(new FastaReader(PairwiseAlignment.class.getResource("/resources/test.fa").getFile().toString()));
 			msa = MSA.createMuscleMSA(seqs);
 		} 
 		catch (Exception e)
@@ -63,11 +64,11 @@ public class MSATest extends TestCase
 	public void testGetById()
 	{
 		Sequence s1 = msa.getById("1");
-		assertEquals("checking sequence id",s1.getName(),"1");
-		assertEquals("checking 1st sequence",s1.seqString(),"KGVAVEHRQAVSFLTGMQHQFPLSEDDIVMVKTSFSFDASVWQLFWWSLSGASAYLLPPGWEKDSALIVQAIHQENVTTAHFIPAMLNSFLDQAEIERLSDRTSLKRVFAGGEPLAPRTAARFASVL-PQVSLIHGYGPTEATVDAAF");
+		assertEquals("checking sequence id",s1.getID(),"1");
+		assertEquals("checking 1st sequence",s1.getSequenceString(),"KGVAVEHRQAVSFLTGMQHQFPLSEDDIVMVKTSFSFDASVWQLFWWSLSGASAYLLPPGWEKDSALIVQAIHQENVTTAHFIPAMLNSFLDQAEIERLSDRTSLKRVFAGGEPLAPRTAARFASVL-PQVSLIHGYGPTEATVDAAF");
 		Sequence s2 = msa.getById("2");
-		assertEquals("checking sequence id",s2.getName(),"2");
-		assertEquals("checking 2nd sequence",s2.seqString(),"KGVAIEHQGLTNYIWWARRVYVKGEKTNFPLYSSIAFDLTITSVFTPLITGNAIIVY--GGENSTALLDSIIQDSRADIIKLTPAHLQ-LLKEINI---PAECTIRKFIVGGDNLSTRLARSISGKFGGKIEIFNEYGPTETVVGCMI");
+		assertEquals("checking sequence id",s2.getID(),"2");
+		assertEquals("checking 2nd sequence",s2.getSequenceString(),"KGVAIEHQGLTNYIWWARRVYVKGEKTNFPLYSSIAFDLTITSVFTPLITGNAIIVY--GGENSTALLDSIIQDSRADIIKLTPAHLQ-LLKEINI---PAECTIRKFIVGGDNLSTRLARSISGKFGGKIEIFNEYGPTETVVGCMI");
 	}
 
 	/**
