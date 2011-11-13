@@ -10,6 +10,8 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.roettig.SequenceTools.base.SequenceContainer;
+import org.roettig.SequenceTools.base.impl.DefaultSequence;
+import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
 
 public class SeqXMLReader implements SequenceReader
 {
@@ -34,6 +36,7 @@ public class SeqXMLReader implements SequenceReader
 	@Override
 	public SequenceContainer read(InputStream in)
 	{
+		SequenceContainer ret = new DefaultSequenceContainer();
 		SAXReader reader = new SAXReader();
         try
 		{
@@ -43,6 +46,7 @@ public class SeqXMLReader implements SequenceReader
 		{
         	throw new RuntimeException(e);
 		}
+        
 		Element root = document.getRootElement();
 		Element seqs = (Element) document.selectSingleNode("//sequences");
 		
@@ -51,8 +55,10 @@ public class SeqXMLReader implements SequenceReader
             Element seq = (Element) i.next();
             String id  = seq.valueOf("id/text()");
             String sseq = seq.valueOf("seq/text()");
+            ret.add( DefaultSequence.create( id, sseq) );
         }
-        return null;
+        
+        return ret;
 	}
 
 	public static void main(String[] args)
