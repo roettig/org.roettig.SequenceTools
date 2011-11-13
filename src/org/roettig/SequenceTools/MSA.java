@@ -339,7 +339,7 @@ public class MSA implements Iterable<Sequence>, Serializable
 		int sM=0;
 		for(int i=0;i<idx;i++)
 		{
-			char symb = s.getSequenceString().charAt(i+1);   
+			char symb = s.getSequenceString().charAt(i);   
 			if(symb!='-')             
 				sM++;
 		}
@@ -361,7 +361,7 @@ public class MSA implements Iterable<Sequence>, Serializable
 		{
 			if(idx==sM)
 				return i;
-			char symb = s.getSequenceString().charAt(i+1);
+			char symb = s.getSequenceString().charAt(i);
 			if(symb!='-')
 				sM++;
 		}
