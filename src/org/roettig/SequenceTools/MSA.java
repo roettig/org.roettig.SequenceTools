@@ -136,7 +136,7 @@ public class MSA implements Iterable<Sequence>, Serializable
 		writer.write(seqs, filename);
 	}
 
-	public static MSA loadFromFile(String filename) throws FileNotFoundException, FileParseErrorException
+	public static MSA loadFromFile(String filename)
 	{
 		MSA ret = new MSA();
 		ret.load(filename, new SeqXMLReader());
@@ -289,7 +289,7 @@ public class MSA implements Iterable<Sequence>, Serializable
 	 * @return SequenceSet
 	 * 
 	 */
-	public DefaultSequenceContainer getSubSequences( Set<Integer> cols, String refsid)
+	public DefaultSequenceContainer getSubSequences( Collection<Integer> cols, String refsid)
 	{
 		TreeMap<Integer,Integer> nidxs = new TreeMap<Integer,Integer>();
 		for(Integer c: cols)

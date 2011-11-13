@@ -115,7 +115,7 @@ public class ASCMSA extends MSA
 	 * @throws FileNotFoundException
 	 * @throws FileParseErrorException
 	 */
-	public static ASCMSA loadFromFile(String filename) throws FileNotFoundException, FileParseErrorException
+	public static ASCMSA loadFromFile(String filename)
 	{
 		ASCMSA ret = new ASCMSA();
 		ret.load(filename);
