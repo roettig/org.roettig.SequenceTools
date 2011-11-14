@@ -4,24 +4,19 @@ import org.roettig.SequenceTools.binres.Deployer;
 
 public class HmmerDeployer
 {
-	private static String LNX_HMMALIGN = "hmmalign_lnx";
-	private static String WIN_HMMALIGN = "hmmalign_win";
-	private static String MAC_HMMALIGN = "hmmalign_mac";
-	
-	private static String LNX_HMMBUILD = "hmmbuild_lnx";
-	private static String WIN_HMMBUILD = "hmmbuild_win";
-	private static String MAC_HMMBUILD = "hmmbuild_mac";
+	private static String[] ALIGNNAMES = {"hmmalign_lnx","hmmalign_mac","hmmalign_win"};
+	private static String[] BUILDNAMES = {"hmmbuild_lnx","hmmbuild_mac","hmmbuild_win"};
 	
 	public static String deployHMMALIGN()
 	{
-		String OS = LNX_HMMALIGN;
+		String OS = ALIGNNAMES[Deployer.getOS()];
 		String path = Deployer.deploy(HmmerDeployer.class.getResourceAsStream(OS), HmmerDeployer.class.getCanonicalName()+"_"+OS);
 		return path;
 	}
 	
 	public static String deployHMMBUILD()
 	{
-		String OS = LNX_HMMBUILD;
+		String OS = BUILDNAMES[Deployer.getOS()];
 		String path = Deployer.deploy(HmmerDeployer.class.getResourceAsStream(OS), HmmerDeployer.class.getCanonicalName()+"_"+OS);
 		return path;
 	}
