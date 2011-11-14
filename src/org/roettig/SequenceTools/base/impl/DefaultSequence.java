@@ -88,4 +88,10 @@ public class DefaultSequence implements Sequence, Annotated
 	{
 		return new DefaultSequence(sid, seq);
 	}
+
+	@Override
+	public Map<String, Object> getMap()
+	{
+		return props.getMap();
+	}
 }

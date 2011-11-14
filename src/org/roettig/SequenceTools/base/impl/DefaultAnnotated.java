@@ -60,5 +60,12 @@ public class DefaultAnnotated implements Annotated
 		return names;
 	}
 
+	@Override
+	public Map<String, Object> getMap()
+	{
+		return data;
+	}
+
+	
 }
 

@@ -7,7 +7,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.roettig.SequenceTools.base.Annotated;
+import org.roettig.SequenceTools.base.Sequence;
 import org.roettig.SequenceTools.base.SequenceContainer;
 import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
 import org.roettig.SequenceTools.binres.hmmer.HmmerDeployer;
@@ -167,6 +171,12 @@ public class HMM implements Serializable
 		new FastaWriter().write(seqs, tmpIn.getAbsolutePath());
 		saveToFile(hmmFile.toString());
 
+		Map<String,Map<String,Object>> annos = new HashMap<String, Map<String,Object>>();
+		for(Sequence seq: seqs)
+		{
+			annos.put(seq.getID(),((Annotated) seq).getMap());
+		}
+		
 		try
 		{
 			ProcessBuilder builder = new ProcessBuilder( HMMALIGNPATH,"--outformat", "A2M", "-o",tmpOut.toString(),hmmFile.toString(),tmpIn.toString()); 
@@ -187,6 +197,14 @@ public class HMM implements Serializable
 
 		ret.load(tmpOut.toString(), new FastaReader());
  
+		for(Sequence seq: ret.seqs)
+		{
+			Map<String,Object> map = annos.get(seq.getID());
+			for(String key: map.keySet())
+			{
+				((Annotated) seq).addProperty(key, map.get(key));
+			}
+		}
 
 		// delete temporary files
 		hmmFile.delete();

@@ -73,6 +73,12 @@ public class MSA implements Iterable<Sequence>, Serializable
 			throw new RuntimeException(e);
 		}
 
+		Map<String,Map<String,Object>> annos = new HashMap<String, Map<String,Object>>();
+		for(Sequence seq: seqs)
+		{
+			annos.put(seq.getID(),((Annotated) seq).getMap());
+		}
+		
 		new FastaWriter().write(seqs,tmpIn.getAbsolutePath());
 
 		try
@@ -108,6 +114,14 @@ public class MSA implements Iterable<Sequence>, Serializable
 
 		((Annotated) ret.seqs).addProperty("aligned", true);
 		
+		for(Sequence seq: ret.seqs)
+		{
+			Map<String,Object> map = annos.get(seq.getID());
+			for(String key: map.keySet())
+			{
+				((Annotated) seq).addProperty(key, map.get(key));
+			}
+		}
 		
 
 		tmpIn.delete();

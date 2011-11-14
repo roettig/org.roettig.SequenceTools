@@ -243,4 +243,10 @@ public class DefaultSequenceContainer implements SequenceContainer, Serializable
 	{
 		return props.getPropertyNames();
 	}
+
+	@Override
+	public Map<String, Object> getMap()
+	{
+		return props.getMap();
+	}
 }

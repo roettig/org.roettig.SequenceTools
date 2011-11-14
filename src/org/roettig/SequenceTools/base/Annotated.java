@@ -1,6 +1,7 @@
 package org.roettig.SequenceTools.base;
 
 import java.util.List;
+import java.util.Map;
 
 public interface Annotated
 {
@@ -44,4 +45,6 @@ public interface Annotated
 	 * @return list of property names
 	 */
 	List<String> getPropertyNames();
+	
+	Map<String,Object> getMap();
 }
