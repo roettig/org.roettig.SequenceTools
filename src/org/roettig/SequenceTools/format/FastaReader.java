@@ -83,6 +83,7 @@ public class FastaReader implements SequenceReader
 				}
 			}
 			String seq = SEQS.toString();
+			IDS = IDS.trim();
 			if(!checkSeq(seq))
 				throw new RuntimeException("invalid sequence found with id "+IDS);
 			seqs.add(DefaultSequence.create(IDS,seq));
