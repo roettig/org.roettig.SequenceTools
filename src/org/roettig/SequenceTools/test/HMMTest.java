@@ -10,7 +10,6 @@ import org.roettig.SequenceTools.HMM;
 import org.roettig.SequenceTools.MSA;
 import org.roettig.SequenceTools.PairwiseAlignment;
 import org.roettig.SequenceTools.base.SequenceContainer;
-import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
 import org.roettig.SequenceTools.format.FastaReader;
 
 /**
@@ -58,7 +57,7 @@ public class HMMTest extends TestCase
 			e.printStackTrace();
 			fail("align failed");
 		}
-		assertEquals("",ali.getById("3").getSequenceString(),"KGIAIEHQGLTNYIWWARRVYVKGEKTNFPLYSSIAFDLTITSVFTPLITGNAIIVY--GGENSTALLDSIIQDSRADIIKLTPAHLQ-LLKEINI---PAECTIRKFIVGGDNLSTRLARSISGKFGGKIEIFNEYGPTETVVGCMI");
+		assertEquals("KGIAIEHQGLTNYIWWARRVYVKGEKTNFPLYSSIAFDLTITSVFTPLITGNAIIVY--GGENSTALLDSIIQDSRADIIKLTPAHLQ-LLKEINI---PAECTIRKFIVGGDNLSTRLARSISGKFGGKIEIFNEYGPTETVVGCMI",ali.getById("3").getSequenceString());
 	}
 
 }
