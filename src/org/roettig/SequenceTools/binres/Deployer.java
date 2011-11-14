@@ -9,6 +9,28 @@ import java.io.InputStream;
 
 public class Deployer
 {
+	public static int LNX = 0;
+	public static int MAC = 1;
+	public static int WIN = 2;
+	
+	public static int getOS()
+	{
+		String os   = System.getProperty("os.name");
+		
+		// default platform
+		int OS = WIN;
+
+		if(os.toLowerCase().contains("nux")||os.toLowerCase().contains("nix"))
+		{
+			OS = LNX;
+		}
+		if(os.toLowerCase().contains("mac"))
+		{
+			OS = MAC;
+		}
+		
+		return OS;
+	}
 	
 	public static String deploy(InputStream in, String ID)
 	{
