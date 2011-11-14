@@ -199,11 +199,13 @@ public class HMM implements Serializable
  
 		for(Sequence seq: ret.seqs)
 		{
+			//FIXME
 			Map<String,Object> map = annos.get(seq.getID());
 			for(String key: map.keySet())
 			{
 				((Annotated) seq).addProperty(key, map.get(key));
 			}
+			
 		}
 
 		// delete temporary files
