@@ -13,10 +13,11 @@ import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.utils.ChangeVetoException;
 import org.junit.Before;
 import org.junit.Test;
-import org.roettig.SequenceTools.AlignedSequenceIdentity;
 import org.roettig.SequenceTools.PairwiseAlignment;
-import org.roettig.SequenceTools.SequenceSet;
+import org.roettig.SequenceTools.base.SequenceContainer;
+import org.roettig.SequenceTools.base.impl.AlignedSequenceIdentity;
 import org.roettig.SequenceTools.exception.FileParseErrorException;
+import org.roettig.SequenceTools.format.FastaReader;
 
 /**
  * @author roettig
@@ -43,11 +44,11 @@ public class PairwiseAlignmentTest extends TestCase
 	@Test
 	public void testAlign() throws IllegalSymbolException, ChangeVetoException, FileNotFoundException, FileParseErrorException
 	{
-		SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test.fa").getFile());
+		SequenceContainer seqs = new FastaReader().read(PairwiseAlignment.class.getResourceAsStream("/resources/test.fa"));
 		PairwiseAlignment pwa = new PairwiseAlignment();
-		double pid = pwa.align( seqs.getByIndex(0), seqs.getByIndex(1), AlignedSequenceIdentity.getInstance() );
+		double pid = pwa.align( seqs.getByIndex(0).getSequenceString(), seqs.getByIndex(1).getSequenceString(), AlignedSequenceIdentity.getInstance() );
 		assertEquals("pid of alignment",0.23404255319148937,pid,1e-8);
-		pid = pwa.align( seqs.getByIndex(0), seqs.getByIndex(0), AlignedSequenceIdentity.getInstance() );
+		pid = pwa.align( seqs.getByIndex(0).getSequenceString(), seqs.getByIndex(0).getSequenceString(), AlignedSequenceIdentity.getInstance() );
 		assertEquals("pid of self-alignment",1.0,pid,1e-5);
 	}
 

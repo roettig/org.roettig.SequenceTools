@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.roettig.SequenceTools;
+package org.roettig.SequenceTools.base;
 
 /**
  * Interface for classes that compute specific sequence identities like

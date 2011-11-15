@@ -1,4 +1,6 @@
-package org.roettig.SequenceTools;
+package org.roettig.SequenceTools.base.impl;
+
+import org.roettig.SequenceTools.base.SequenceIdentity;
 
 public class HSSPScore implements SequenceIdentity
 {

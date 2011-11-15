@@ -9,7 +9,8 @@ import org.junit.Test;
 import org.roettig.SequenceTools.HMM;
 import org.roettig.SequenceTools.MSA;
 import org.roettig.SequenceTools.PairwiseAlignment;
-import org.roettig.SequenceTools.SequenceSet;
+import org.roettig.SequenceTools.base.SequenceContainer;
+import org.roettig.SequenceTools.format.FastaReader;
 
 /**
  * @author roettig
@@ -28,7 +29,7 @@ public class HMMTest extends TestCase
 		MSA msa = null;
 		try
 		{
-			SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test.fa").getFile());
+			SequenceContainer seqs = new FastaReader().read(PairwiseAlignment.class.getResourceAsStream("/resources/test.fa"));
 			msa = MSA.createMuscleMSA(seqs);
 		} 
 		catch (Exception e)
@@ -40,7 +41,7 @@ public class HMMTest extends TestCase
 	}
 
 	/**
-	 * Test method for {@link org.roettig.SequenceTools.HMM#align(org.roettig.SequenceTools.SequenceSet)}.
+	 * Test method for {@link org.roettig.SequenceTools.HMM#align(org.roettig.SequenceTools.base.impl.DefaultSequenceContainer)}.
 	 */
 	@Test
 	public void testAlign()
@@ -48,7 +49,7 @@ public class HMMTest extends TestCase
 		MSA ali = null;
 		try
 		{	
-			SequenceSet seqs = SequenceSet.readFromFile(PairwiseAlignment.class.getResource("/resources/test2.fa").getFile());
+			SequenceContainer seqs = new FastaReader().read(PairwiseAlignment.class.getResourceAsStream("/resources/test2.fa"));
 			ali = hmm.align(seqs);
 		} 
 		catch (Exception e)
@@ -56,7 +57,7 @@ public class HMMTest extends TestCase
 			e.printStackTrace();
 			fail("align failed");
 		}
-		assertEquals("",ali.getById("3").seqString(),"KGIAIEHQGLTNYIWWARRVYVKGEKTNFPLYSSIAFDLTITSVFTPLITGNAIIVY--GGENSTALLDSIIQDSRADIIKLTPAHLQ-LLKEINI---PAECTIRKFIVGGDNLSTRLARSISGKFGGKIEIFNEYGPTETVVGCMI");
+		assertEquals("KGIAIEHQGLTNYIWWARRVYVKGEKTNFPLYSSIAFDLTITSVFTPLITGNAIIVY--GGENSTALLDSIIQDSRADIIKLTPAHLQ-LLKEINI---PAECTIRKFIVGGDNLSTRLARSISGKFGGKIEIFNEYGPTETVVGCMI",ali.getById("3").getSequenceString());
 	}
 
 }

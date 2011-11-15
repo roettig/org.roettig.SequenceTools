@@ -1,7 +1,9 @@
 /**
  * 
  */
-package org.roettig.SequenceTools;
+package org.roettig.SequenceTools.base.impl;
+
+import org.roettig.SequenceTools.base.SequenceIdentity;
 
 /**
  * GlobalSequenceIdentity implements the SequenceIdentity interface and computes

@@ -1,26 +1,19 @@
 package org.roettig.SequenceTools;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.StringReader;
-
-import org.apache.commons.io.IOUtils;
 import org.biojava.bio.BioException;
 import org.biojava.bio.SimpleAnnotation;
 import org.biojava.bio.seq.Sequence;
-import org.biojava.bio.seq.db.SequenceDB;
 import org.biojava.bio.seq.impl.SimpleSequenceFactory;
-import org.biojava.bio.seq.io.SeqIOTools;
+
 import org.biojava.bio.seq.io.SymbolTokenization;
-import org.biojava.bio.symbol.Alphabet;
 import org.biojava.bio.symbol.AlphabetManager;
 import org.biojava.bio.symbol.FiniteAlphabet;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SimpleSymbolList;
 import org.biojava.bio.symbol.SymbolList;
-import org.roettig.SequenceTools.exception.FileParseErrorException;
+import org.roettig.SequenceTools.base.SequenceContainer;
+import org.roettig.SequenceTools.base.impl.DefaultSequenceContainer;
+import org.roettig.SequenceTools.format.FastaReader;
 
 /**
  * SeqTools collects several static helper functions in the context
@@ -272,37 +265,22 @@ public class SeqTools
 
 	public static boolean checkFastaFile(String filename)
 	{
-		SequenceSet seqs = null;
+		SequenceContainer seqs = null;
 		try
 		{
-			seqs = SequenceSet.readFromFile(filename);
+			seqs = DefaultSequenceContainer.readFromFastaFile(filename);
 		} 
-		catch (FileNotFoundException e)
+		catch (Exception e)
 		{
-			e.printStackTrace();
-			return false;
-		} 
-		catch (FileParseErrorException e)
-		{
-			e.printStackTrace();
 			return false;
 		}
+	
 		return true;
 	}
 
-	public static boolean checkFastaString(String s)
+	public static boolean checkFastaString(String seq)
 	{
-		SequenceSet seqs = null;
-		try
-		{
-			seqs = SequenceSet.readFromReader(new BufferedReader(new StringReader(s)));
-		} 
-		catch (FileParseErrorException e)
-		{
-			e.printStackTrace();
-			return false;
-		}
-		return true;	
+		return seq.matches("^[ACDEFGHIKLMNPQRSTVWXYacdefghiklmnpqrstvwxy-]+$");	
 	}
 
 	public static Sequence makeProteinSequence(String id, String seq)
@@ -328,10 +306,5 @@ public class SeqTools
 		}
 		// make Sequence from SymbolList
 		return new SimpleSequenceFactory().createSequence(sl,"", id, new SimpleAnnotation());
-	}
-
-	public static void main(String args[])
-	{
-		System.out.println(checkFastaString(">1\nLKWPETER\n>2\n#PETERLE"));
 	}
 }

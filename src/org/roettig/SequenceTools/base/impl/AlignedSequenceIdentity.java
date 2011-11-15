@@ -1,7 +1,9 @@
 /**
  * 
  */
-package org.roettig.SequenceTools;
+package org.roettig.SequenceTools.base.impl;
+
+import org.roettig.SequenceTools.base.SequenceIdentity;
 
 /**
  * AlignedSequenceIdentity implements the SequenceIdentity interface and computes
